@@ -1,0 +1,9 @@
+[alias]
+	st = status
+[color]
+	ui = auto
+[user]
+	name = Tim Snyder
+	email = t.snyder@samsung.com
+[credential]
+	helper = cache
