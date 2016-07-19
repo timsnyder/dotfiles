@@ -1,0 +1,59 @@
+*Numeric.txt*        Plugin to Aid Editing of Numbers   - Last Change: tsnyder 13-Feb-09 11:45 
+
+
+NOTE this is a work in progress - tsnyder 03-Mar-07
+
+							    *Numeric-contents*
+
+1. Introduction				                   |Numeric-intro|
+2. Commands				                   |Numeric-commands|
+3. Customization				           |Numeric-customize|
+4. ToDo List				                   |Numeric-TODO|
+
+
+==============================================================================
+1. Introduction						        *Numeric-intro*
+
+There are times when plaintext files contain numeric data.  It would be nice to
+have some helper functions built up to assist in editing such files.  This
+plug-in is intended to develop primitives that can be utilized directly or 
+to build other, more application specific plug-ins.
+
+==============================================================================
+2. Commands						     *Numeric-commands*
+
+2.a   Hotkey Mappings			            |Numeric-commands-hotkeys|
+
+						    *Numeric-commands-hotkeys*
+------------------------------------------------------------------------------
+2.a Default Hotkey Mappings
+
+							       *Y* *tsnyder-Y*        
+["x]Y        		 Make Y yank to end of like like |D| deletes to end of 
+			 line. I don't care if it is vi compatable, it just 
+			 makes sense... 
+
+						 *CTRL-W_c* *tsnyder-CTRL-W_c*
+CTRL-W c		 Resize VIM window width to fit linelength.  This is
+			 easy to confuse with the default hotkey for :close
+			 but there is a small difference.  The Vim Help says
+			 that CTRL-W CTRL-C will cancel the close.  It doesn't.
+			 So, this keystroke doesn't remove any functionality.
+	
+
+==============================================================================
+3. Customization					    *Numeric-customize*
+
+==============================================================================
+4. ToDo List					                 *Numeric-TODO*
+
+  * This documentation is really sucky.  make it better
+
+  * There are issues with basic floating point number math in perl. 
+    Use one of the libraries to do the math and avoid issues with div.
+
+  * Handle text that isn't whitespace delimited a little more nicely
+    probably have an isnum variable like iskeyword or something.
+
+Copyright: see |manual-copyright|  vim:tw=78:ts=8:ft=help:norl:isk+=(,),/,+,-,\:,':tags+=$VIMRUNTIME/doc/tags:fdm=marker:fdc=2
+

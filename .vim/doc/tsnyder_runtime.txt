@@ -1,0 +1,852 @@
+*tsnyder_runtime.txt*  startpoint for users of ~tsnyder/.vim runtime files	- Last Change: tsnyder 19-Jul-16 07:41 
+
+						     *tsnyder* *tsnyder_runtime* 
+This file is the toplevel |online-help| file for the /home/tsnyder/rel/vim
+runtime directory.
+
+1. Why to use my runtime files	         |tsnyder-why|
+2. How to use my runtime	         |tsnyder-setup|
+3. Parameters You Can Override		 |tsnyder-parameters|
+4. Key Mappings				 |tsnyder-mappings|
+5. Added Commands			 |tsnyder-commands|
+6. Tips				         |tsnyder-tips|
+7. ToDo List			         |tsnyder-todo|
+
+
+==============================================================================
+1. Why to use my Runtime					 *tsnyder-why*
+
+First, you probably want to know what using my .vimrc will give you over using
+only your own.  I can offer the following:
+
+
+   * Several already installed Plugins.  I know you are smart and can download
+     crap from vim.org too but I've already gone through the pain of getting
+     the Plugins I have to play nicely with each other (sometimes conflicting
+     mappings, menus etc are a problem) and I've made sure the documentation
+     is set up correctly (some Plugins don't come with it and I've copied and
+     pasted comments into help files so that they can be looked up within
+     Vim's help, etc).
+
+   * My knowledge on Vim options that are useful. 99% of the options I set in
+     my .vimrc are commented as to why they are being set.  If you find one that
+     isn't commented and you want to know what it does, bug me and I will add
+     a comment.
+
+   * My edits to runtime (syntax/ftplugin/etc) files.  I've hacked several
+     existing runtime files to fix bugs and add features but haven't made the
+     time to post them back to their maintainers. Even if I had, the installed
+     runtime files might not be updated as often as I do.
+
+   * My colorscheme.  The default colors for some things (ahem, |folding|) is
+     horrible 
+
+   * |tsnyder-commands| and |tsnyder-mappings| to make life easier   
+
+   * |autocommand| Access to my Perl boilerplates in /home/tsnyder/rel/perl/templates
+
+   * |tsnyder-tips| on using Vim at your fingertips.  Just type 
+     ":help tsnyder-tips<CR>"
+
+All of it is free for the taking and you only have to take the portions you
+want!
+
+
+--
+Tim Snyder
+
+==============================================================================
+2. How to use my Runtime				       *tsnyder-setup*
+
+There are two main sections of my configuration.  The first is all of the 
+runtime files that enable px & v9 filetypes, and have other global plugins.
+
+To add my directories Add the following line to your |.vimrc| file normally 
+(~/.vimrc):
+>
+ source ~tsnyder/.vim/tsnyder_rel_path_setup.vim
+
+If you want what I consider to be good baseline option settings feel free 
+to also add
+>
+ runtime tsnyder_vimrc.vim
+
+If you add the commands at the beginning of your .vimrc, any changes you make
+afterward will override my defaults.
+
+NOTE you will need to do the commands in that order because the first script
+adds necessary paths to the 'runtimepath' option.  See the next section for 
+details.
+
+
+NOTE to use filetype plugins, you will also need to make sure you have
+>
+ filetype plugin indent on
+
+in your |.vimrc|
+
+You no longer need to make ~/.vim a symlink to ~tsnyder/rel/vim or set the 
+VIMINIT environment variable.
+
+	 
+------------------------------------------------------------------------------
+2.a The Details               			       *tsnyder-setup-details*
+
+For people who have a ~/.vim directory already, I'm sure the notion of using 
+mine seems preposterous!  However, it is fairly easy to edit 'runtimepath' in 
+your .vimrc such that my runtime directory is inserted between $VIMRUNTIME and 
+your personal runtime directory in the priority ranking. 
+
+Here's what you need to copy and paste into your `/.vimrc:
+ 
+" LOWEST priority, use the default system files
+set runtimepath=$VIMRUNTIME
+
+" But prefer anything the sysadmins changed for this install
+set runtimepath^=$VIM/vimfiles
+set runtimepath+=$VIM/vimfiles/after
+
+" But first look in Tim Snyder's released dir for stuff
+set runtimepath^=~tsnyder/.vim
+set runtimepath+=~tsnyder/.vim/after
+
+" HIGHEST priortiy, my own stuff in ~/.vim
+set runtimepath^=$HOME/.vim
+set runtimepath+=$HOME/.vim/after
+
+This will make it so that you will only get plugins that aren't already in your
+~/.vim directory and that files in your after directory will get last say.
+
+To make this even eaiser, I made a script that you can simply source that do
+these commands for you. Just add:
+>
+ source ~tsnyder/.vim/tsnyder_rel_path_setup.vim
+
+to your .vimrc.
+
+
+All of this is documented in the Vim online help under |startup|.
+
+==============================================================================
+3. Overridable Parameters				  *tsnyder-parameters*
+
+By defining a different value for these parameters you can modify how some of
+my commands/mappings work.
+
+	  *g:AlwaysToDoKeywords* *always_color_these_words_with_todo-variable*
+g:AlwaysToDoKeywords
+			By defining this to be a different set of keywords
+			using |let|, you can control the list of things that I
+			like to always be highlighted in yellow when syntax
+			highlighting is on.   Too many syntax scripts have
+			different sets of words you can use to highlight
+			important comments.  This is a rough attempt at trying
+			to have some consistancy.  Look near the top of
+			~tsnyder/rel/vim/.vimrc for the current default.
+
+==============================================================================
+4. Key Mappings						    *tsnyder-mappings*
+
+4.a   General Mappings			     |tsnyder-mappings-general|
+4.b   Programming Mappings (primarily Perl)  |tsnyder-mappings-programming|
+4.c   Komment(sic) Mappings		     |tsnyder-mappings-comment|
+4.d   Visual Mode Mappings		     |tsnyder-mappings-visual|
+4.d.1 Grouping Mappings			     |tsnyder-mappings-grouping|
+
+I know that the minute that I start sharing my hotkeys with other people, I 
+will be getting into territory where they should be in a Plugin |using-<Plug>|
+so that the functionality behind the hotkey can be divorced from the muscle-
+memory that people are so loath (rightfully so) to <un/re>learn.
+
+NOTE I did this and they are now in plugin/tsnyder_hotkeys.vim.  However, it 
+doesn't fully use <Plug> - tsnyder 14-Dec-05
+
+I have been in the process of moving purpose-specific key bindings into the
+appropriate plugins but still have a bunch in my .vimrc that are useful.
+Eventually, I will make a tsnyder.vim plugin |using-<Plug>|.  If you are
+annoyed by the specific keys I've chosen for these mappings, I will 
+|write-plugin| sooner rather than later.
+
+NOTE I am in the process of moving these out of my .vimrc and into a plugin
+     script - tsnyder 06-Dec-05.  This will:
+        * seperate my option settings from functionality so that you can 
+
+
+						    *tsnyder-mappings-general*
+------------------------------------------------------------------------------
+4.a General Mappings
+
+							       *Y* *tsnyder-Y*        
+["x]Y        		 Make Y yank to end of like like |D| deletes to end of 
+			 line. I don't care if it is vi compatable, it just 
+			 makes sense... 
+
+						 *CTRL-W_c* *tsnyder-CTRL-W_c*
+CTRL-W c		 Resize VIM window width to fit linelength.  This is
+			 easy to confuse with the default hotkey for :close
+			 but there is a small difference.  The Vim Help says
+			 that CTRL-W CTRL-C will cancel the close.  It doesn't.
+			 So, this keystroke doesn't remove any functionality.
+			 If you let go of the <Control> key before hitting 
+			 "c", you resize the window.  If you hold <Control>
+			 down, you |:close| it.
+
+			 NOTE: this does not alter the size of the X window 
+			 containing vim, only the size of a vertically split 
+			 |windows|.
+
+					       *alt-j* *alt-k* *alt-h* *alt-l*
+					       *tsnyder-alt-j* *tsnyder-alt-k* 
+					       *tsnyder-alt-h* *tsnyder-alt-l*
+<M-j>,<M-h>,<M-k>,<M-l>  move with a count of s:UserBigMoveCount in the
+			 direction |h|, |j|, |k| and |l| move in normal
+			 mode
+
+			 NOTE: Need to make s:UserBigMoveCount a parameter
+			       that is settable after my .vimrc is sourced
+
+			       The current 07-Nov-05 value of
+			       s:UserBigMoveCount is 5.
+
+							     *gf* *tsnyder-gf*
+[count]gf		Edit the file whose name is under or after the cursor.
+			My mapping uses |:drop| instead of |:edit|
+
+
+							   *gsf* *tsnyder-gsf*
+[count]gsf		|:Sdrop| <cfile> instead of |:edit| that |CTRL-W_f|
+			uses
+
+														  
+						*tsnyder-mappings-programming*
+------------------------------------------------------------------------------
+4.b  Perl/Programming Macros -- Begin with CTRL-P
+
+NOTE these have moved into plugin/boilerplate.vim or after/ftplugin/perl.vim as
+     appropriate.  Need to document boilerplate better and expand functionality
+     whenever I have time for that... ;)
+
+     Also note that some of these were moved to insert-mode only because CTRL-P
+     conflicted with what I wanted for jumping to next/prev diff.
+     - tsnyder 04-Aug-06
+
+							 *i_CTRL-P_f* *i_CTRL-P_s*
+					 *tsnyder-i_CTRL-P_f* *tsnyder-i_CTRL-P_s*
+CTRL-P f, CTRL-P s	Insert my personal function boilerplate. Based on 
+			Current syntax |b:current_syntax-variable|. 
+
+			NOTE: Currently only Perl is supported - tsnyder 
+			      10-Jul-05
+
+								    *i_CTRL-P_m*
+							    *tsnyder-i_CTRL-P_m*
+CTRL-P m		Insert my personal method boilerplate. Based on 
+			current syntax |b:current_syntax-variable|. 
+
+			NOTE: Currently only Perl is supported - tsnyder 
+			      10-Jul-05
+
+								  *CTRL-P_psr*
+							  *tsnyder-CTRL-P_psr*
+CTRL-P psr		Insert Code snippit for displaying a Perl
+			data structure with Psr (a Perl/Tk-based data structure
+			display utility that is useful for debugging)
+
+
+						    *tsnyder-mappings-comment*
+						   *tsnyder-mappings-comments*
+						    *tsnyder-mappings-komment*
+						   *tsnyder-mappings-komments*
+------------------------------------------------------------------------------
+4.c  Komment(sic) Macros  -- Begin with CTRL-K
+
+NOTE: these may collide with |digraphs| if you use them a lot.  I don't.
+
+					       *CTRL-K_ut* *tsnyder-CTRL-K_ut*
+CTRL-K ut		User, date and time appended at current cursor location
+
+					       *CTRL-K_ud* *tsnyder-CTRL-K_ud*
+CTRL-K ud		User, and date appended at current cursor location
+
+						 *CTRL-K_t* *tsnyder-CTRL-K_t*
+CTRL-K t		Date and Time appended at current cursor location
+
+
+The rest of my Komment Mappings were depricated the minute I installed the 
+|NERD_comments| plugin.  Any personal mappings I make to the |NERD_comments|
+functionality will be done in my personal .vimrc |using-<Plug>|
+
+						     *tsnyder-mappings-visual*
+------------------------------------------------------------------------------
+4.d    Mappings That are Restricted to |visual-mode|
+
+									*v_//*
+//			Make // do search for visually selected text instead 
+			of expanding selection to search match By default
+			hitting / while in visual mode allows you to search as
+			normal and Vim expands your selection to what is
+			found.  Sometimes, you just want to highlight
+			something and search for what is highlighted. This
+			mapping will allow you to do both.
+
+						  *howto-yank/put-into-search*
+			If you want to cut and paste into a search string,
+			here is how to do it from |Normal-mode|: |yank|
+			something, enter the search |cmdline-window| by typing
+			|q/|, |paste|.
+
+			NOTE if you end up in|Cmdline-mode|because |q/| is
+			slighty goofy to type and you have 'compatible' turned
+                        off, you can hit the key defined by 'cedit' to switch 
+                        into |cmdline-window|. The default is CTRL-F. 
+
+						   *tsnyder-mappings-grouping*
+------------------------------------------------------------------------------
+4.d.1  Enclose visually selected text in grouping characters
+
+When in |visual-mode| you can use these to enclose your visual selection in
+group delimiting characters
+
+KnownBugs: 
+       These currently have a bug when the selection goes all the way to the 
+       end of the line.
+
+       The single quotes one moves me someplace wonky like down two lines and 
+       left five chars too. 
+
+       Will debug these at some point.
+
+       - tsnyder 08-Nov-05
+
+						     *v_<Space>(* *v_<Space>)* 
+<Space>(, <Space>)	Parentheses
+
+						     *v_<Space>[* *v_<Space>]* 
+<Space>[, <Space>]	Square Brackets
+
+						     *v_<Space>{* *v_<Space>}* 
+<Space>{, <Space>}	Curley Braces
+
+						     *v_<Space><* *v_<Space>>* 
+<Space><, <Space>>	Angle Brackets
+
+								  *v_<Space>'*
+<Space>'          	Single Quotes
+
+								 *v_<Space>\'*
+<Space>\'          	Escaped Single Quotes
+
+								  *v_<Space>"*
+<Space>"          	Double Quotes
+
+								 *v_<Space>\"*
+<Space>\"          	Escaped Double Quotes
+
+						       *tsnyder-mappings-diff*
+------------------------------------------------------------------------------
+4.e  Jump To Next/Previous Diff
+
+     If you do not want these you can|let|no_tsnyder_diff_hotkeys = 1 in
+     your|setup|before tsnyder_hotkeys.vim gets executed.
+
+     If you want the mapping to a different key, you can map the |<Plug>|
+     mappings before tsnyder_hotkeys.vim gets sourced.
+								      *CTRL-P*
+					                      *tsnyder-CTRL-P*
+						       *<Plug>TsnyderPrevDiff*
+CTRL-P            	Jump to the previous diff and center it in the screen
+			this is the same as |[c| followed by |zz|
+
+								      *CTRL-N*
+					                      *tsnyder-CTRL-N*
+						       *<Plug>TsnyderNextDiff*
+CTRL-N            	Jump to the next diff and center it in the screen
+			this is the same as |]c| followed by |zz|
+
+==============================================================================
+5. Added Commands					    *tsnyder-commands*
+
+5.1 General Commands			     |tsnyder-commands-general|
+5.2 Perl-Interface |perl-using| Commands     |tsnyder-commands-if_perl|
+
+						    *tsnyder-commands-general*
+------------------------------------------------------------------------------
+5.1  General Commands
+
+The commands in this section only use vim and do not require the perl
+interface.
+
+								   *:Annotate*
+:Annotate
+   Vertically split the annotations for current file under CVS control
+
+   NOTE: |:pwd| must indicate that you are someplace within a CVS tree or the
+	 command will fail
+
+   NOTE: This may be depricated soon infavor of using annotate function in
+	 |cvscommand| with mapping in |cvscommand-tips|
+
+								*:ColorPallet*
+:ColorPallet 
+   Open a window that displays /usr/lib/X11/rgb.txt with color names fg in
+   each color 
+   
+   KnownBug: This currently doesn't work, fills up colormap and I haven't spent
+   time to figure out how to fix it
+
+								   *:DoLines*
+:[range]DoLines
+   For each line in the optional [range], send the current line (after
+   stripping any #-delimited comments) through |system()| and append the
+   output text.
+
+   see :help |system()|for all the limitations and links to options for
+   controlling the functionality built into vim
+
+
+								   *:FindTerm*
+:FindTerm {01-} ...
+   It is annoying to type all of the stuff you have to type to search for a
+   term in a espresso PLA table.  This first pass implementation of it
+   will just work for PLAs but I hope to either eventually encorporate with
+   PLA.pm or at least make the care/don't care characters conigurable in some
+   way
+   
+   Takes unlimited args that are parsed into a search string and searched.
+      
+   The characters are handled as follows:
+      whitespace in the arguments is ignored, the function is meant to be used
+      through the user command interface, not called directly, hence the <SID>
+      prefix on the Function of the same name
+   
+      1  becomes [1-]\s*
+      0  becomes [0-]\s*
+      -  becomes [10-]\s*
+   
+      TODO: 
+         * _ needs to be considered whitespace for Verilog purposes
+	 * Need to remember how many args ... supports in a |function| and 
+	   reflect that here.
+
+
+							      *:HilightColors*
+:HilightColors
+   Open a window that displays all of the current color hilighting I hacked
+   the vim-included script so the configuration values for all the colors
+   would be shown instead of being grepped out - tsnyder 22-Jul-05
+
+   KnownBug: This opens two windows right now and I don't rememeber it doing that...
+	     - tsnyder 08-Nov-05
+
+							      *:RTLtoPLAstart* 
+:RTLtoPLAstart[!] {input matrix width}
+   Do the first text-manipulation steps in converting an RTL case statement to
+   a PLA.
+
+   One of the first steps is to|:saveas|a PLA file.  If optional bang (i.e. "!")
+   is given, it is passed to the|:saveas|command.
+
+								    *:RexEdit* 
+								      *:Sdrop* 
+:Sdrop {file} ..
+   Trick drop into always splitting a new window my twiddling 'modifiable' in
+   creative ways.
+
+								     *:Source*
+:Source 
+   Reload Configuration Script and re|edit| the current file.
+
+						    *tsnyder-commands-if_perl*
+------------------------------------------------------------------------------
+5.2  Commands Available If Vim is compiled with |+perl| (see |:version|)
+
+								*:PerlVersion* 
+:PerlVersion 
+   Unless you have compiled with |+perl/dyn|, and you are running on a
+   M$-Winders machine, the perl interface is statically linked into Vim.
+   Regardless, this command will echo the Perl $] special var, using
+   the perl interface.  This is the definitive way (without searching
+   through the Vim source or scanning the output of |:version|) to 
+   determine the version of Perl Vim was compiled with.
+
+
+
+		       *:ColOrder* *:SetCws* *:Banner* *:PinSplit* *:ColSplit*
+The rest of the user commands I've added that use the Perl interface are fully
+documented in the POD for Tsnyder::VIM.  Please refer to the output of:
+
+   perldoc /home/tsnyder/rel/perl/Tsnyder/VIM.pm 
+
+   or 
+
+   :<command> help
+
+For the details on these commands.
+
+
+==============================================================================
+						      *howto-run-vim-like-tim*
+6. Tips							        *tsnyder-tips*
+
+I started writing an email to Jeremy Schreiber in November of 2005 after he
+got back from the Advanced Perl class where they didn't learn much Perl but
+they did have to use vi for three days.  I decided that I really aught to
+include this in my online help since it does have some good pointers in it.
+
+Jeremy,
+
+Like Milind said yesterday, welcome to the land of the mousefree! :)
+
+Seriously though, if you are thinking of becoming a Vim masta (there is a
+significant difference in how badass Vim is in comparison to what you will get
+if you log into some weird box that has old-skool vi |vi_diff.txt|).
+
+Here are some tips that might help:
+
+The best book-style document for it can be found linked off my MPD TWiki page
+Main.TimSnyder. You can find it on the web, it was released under an open
+source license in addition to being sold as a book.  I hacked it to have
+bookmarks for all the chapters.  
+
+						  *howto-use-help-effectively*
+Become familiar with the online |help| system in Vim.  Bram has done a really
+good job in structuring it.  I frequently (every 6 months or so) scan through
+the early chapters and always see a new way of doing things that I've been
+wanting to know for a long time.  Just type ":help<CR>" and start from there,
+he will first teach you how to use |tags|, the analog of hyperlinks in Vim.
+One thing to keep in mind when using it is that command line editing has
+completion |cmdline-completion|.  If you hit <Tab> (more precicly 'wildchar'
+if you have it set to non-default value) the entry will be completed.  CTRL-D
+will list all possible completions for the text you have entered thusfar
+|c_CTRL-D|.  For example, when you hit CTRL-D after typing ":help howto" you
+will see all of the help keywords that begin with howto. 
+
+Note, I try to use that for all of the examples I give for using esoteric
+features.
+
+Note, Tip #94 on vim.org is a pretty good FAQ on using |tags| too, you can find 
+it at: http://www.vim.org/tips/tip.php?tip_id=94
+
+One thing I have had to get used to and may change soon in my .vimrc is how the
+completion works.  It is controlled by 'wildmode' and if you prefer:
+
+> If you like tcsh's autolist completion, you can use the 'wildmode' option to
+> emulate it.  For example, this mimics autolist=ambiguous:
+>	:set wildmode=longest,list
+> This will find the longest match with the first 'wildchar', then list all
+> matching files with the next.
+				    Copied from below |c_CTRL-L|.
+
+
+Some keywords of commands I find highly useful:
+|jump-motions|		where was I 5 minutes ago??? these commands make it 
+			really easy to jump back/forth to places you've been
+			and/or made edits
+
+|mark-motions|		This is a really important spot right here!  ... so hit 
+			"ma" in normal mode so you can get back there by hitting 
+			"'a" later!
+			
+
+|pattern.txt|		you might want to read section 8, |perl-patterns| in 
+			particular to see how Vim regex's are different from Perl
+
+					 *howto-apply-offset-to-pattern-match*
+			You should also take a look at |sub-replace-expression| 
+			for something advanced and pretty cool.  As an example I
+			just did
+
+			:%s/\([3-6]\)\./\=(submatch(1)+1).'.'/gc
+
+			to insert the current (08-Nov-05) section 3
+			|tsnyder-parameters|.  This global search and replace
+			matched all the old sections that were numbered >3 and
+			replaced them with an incremented version.  Notice
+			that I used |:s_c| so that I could just hit 'y' or 'n'
+			a couple of times.  I do have numbers in the body of
+			my help that I didn't want to increment.  I could have
+			been more specific on my match but I often find that
+			getting it close enough and using |:s_c| is a lot
+			faster than trying to get the |regexp| exactly right.
+			Also notice that I needed to use the |submatch()|
+			function to access the backreference.  This is because
+			the \= gives the entire substitute string to Vim's
+			internal |expression| evaluation engine and it does
+			not interpret \1..\n like |:substitute|.  
+
+			So, the next time you need to apply an offset to a
+			bunch of cells in your placement, you have this cool
+			tool! Enjoy!
+
+			Note: This feature is not available unless Vim was
+			compiled with |+eval|.
+
+
+
+|if_perl.txt|		If Vim's regex's annoy you enough you will eventually
+			find Perl inside Vim... how sweet it is...
+
+			NOTE: if you use "very magic" |\V|, the most annoying
+			differences go away.
+
+|gf|			open filename under cursor, really useful for fixing 
+			certain errors in designchecks/placement etc. Depends
+			on the value of 'path'
+
+|windows.txt|		Knowing the difference between a buffer, a window and
+			the rest of the world is important.  Bufferes are 
+			increasingly important now that we have the option to
+			use the |client-server| interface to Vim from Vp. Knowing
+			about |abandon|ing files is important too.
+
+|usr_26.txt|		macros save my life, especially the counting thing 
+			when I have to expand a bus, like in force_po_gates 
+			or other places
+
+|CTRL-A| |CTRL-X|	decrement/increment the next number after cursor
+			I use these often while |recording|
+
+|fold.txt|		I find that folding really helps make sense of
+			complicated/large files 
+
+|pi_expl.txt|		the file explorer, it will pop open by default if you 
+			give a directory name as a file
+
+								*howto-format*
+|gq|			format text according to 'formatprg' or the internal
+			|C-indenting| function if 'fp' is empty.
+
+			Note: by default |C-indenting| uses 'textwidth' to
+			determine when to wrap lines etc.
+
+			'formatoptions' also controls how and when 
+			|automatic-formatting| is done.
+
+			|format-comments| and |fo-table| hold the decoder
+			rings for these string-of-flags style options
+
+|quickfix.txt|		Shorten the compile/fix/compile cycle.  Currently I
+			only use it to check Perl scripts for bugs, I started 
+			configuring this for -flat and -place but it uses
+			scanf style parsing syntax and I've had trouble
+			getting it to work.
+
+			Even though |:make| is not configured for the Axe
+			flow, (see |AMD_axe-TODO|) you can use |:grep| which 
+			will parse the output of 'grepprg' to create a
+			jumplist that can be traversed with |:cc| and it's
+			cousins.
+
+|text-objects|          I really hope he makes the objects user-definable in Vim7 
+			but it looks like I may have to do that for him at
+			some point...  |todo.txt| {search for "Text objects:"}
+
+'virtualedit'           For people used to other editors, the virtual edit
+                        option may help you feel more at home.  It will let
+			you move the cursor anywhere, (i.e. past the end
+			of the line like some mor M$-win type editors let you)
+
+|local-additions|	The rest of the stuff that I have installed in
+			~tsnyder/rel/vim
+
+I have a couple of user-defined commands that I've added |tsnyder-commands|
+mostly to handle reordering the columns in column justified reports (there are
+some others).  You can look at ":ColOrder help" to see the main one's help.
+If you do :command<CR> it will list all of the user-defined commands.
+
+If you have any questions regarding "how do I configure Vim to do..." please
+ask.  I know way too much about that damn editor.  Tim.Snyder@amd.com
+
+While you are futzing around with learning Vim, you might want to consider
+switching window managers to fluxbox.  You can do everything you can in
+gnome but the configuration is much more friendly.  It is configured by a
+couple of text files that are in your home directory.  It is also one of
+the few window managers that have window grouping. Check out
+Systeam.FluxBox on how to do the switch.  I can help you get that
+configured too.
+
+
+==============================================================================
+7. ToDo								*tsnyder-todo*
+
+This is the ToDo list for things that currently live in ~tsnyder/rel/vim/.vimrc 
+there are other ToDo lists for specific plugins, see also |AMD_v9-TODO.txt| and 
+|AMD_axe-TODO.txt|
+
+Feel free to *add-to-the-tsnyder-todo-list* but please don't take anything
+off. Please also include your email address and the date if you don't mind. 
+
+Note of caution: I only add these things as I get annoyed with stuff while
+doing *real-work* so please don't expect to get an email 5 minutes after
+editing this file saying your shiny new feature is ready! ;)
+
+  * Tutorial for all my stuff using vimtutor?
+
+  * Moved boilerplate stuff into their own plugin script.  Need to clean up
+    document
+
+  * Moved hotkeys into their own plugin script, need to make sure it is fully
+    |using-<Plug>|.  Need to document it, new hotkeys, moved hotkeys, how
+    to take only some. Provide sub loaded_*  or noload variables to group 
+    the ones that are groupable
+
+  * Move the Perl programming macros |tsnyder-mappings-programming| to either
+    the perl filetype plugin or a boilerplate plugin.
+
+  * Add the global help tags to .vimrc and the rest of my scripts.  Make tags
+    in comments containted region for syntax/vim.vim
+  
+  * Add |ins-completion| to tips and check out Svec's CleverTab() function
+  
+  * |explorer| doesn't use local version of pwd... need to fix that probably
+    since I lcd all the time in my scripts
+   
+  * Get |ident-search| working and add comments here explaining it's use
+      * For usefulness sake, I'm sure I will have to help it understand the
+        range & hierarchy naming challenges of our environment
+   
+  * Set nomodifiable for *.rpt, *.log, *.??? keep people unfamiliar with Vim
+    from blasting reports away if I make the report viewer plugin.
+   
+  * Add command to set linewrap to the currently longest line, (preserve other
+    people's formatting)
+      * Set comments to wrap like the rest of the text
+      * Add command to detect the indenting size and set 'shiftwidth' accordingly
+       
+  * Make the Man plugin work for perldoc too
+  
+  * Add command mode mappings to do completion based on |globpath()| results  {{{1
+      From tim.snyder@amd.com Wed Nov 30 19:38:14 2005
+      Date: Wed, 30 Nov 2005 19:38:14 -0600 (CST)
+      From: Tim Snyder <tim.snyder@amd.com>
+      To: Tim Snyder <tim.snyder@amd.com>
+      Cc: Christopher Svec <christopher.svec@amd.com>
+      Subject: Re: vim!
+
+      Chris,
+
+      I played around with that some after you left.  Apparently, the
+      customized completion is only able to supply a list of possible matches
+      which Vim then internally filters down according to 'wildmode' and the
+      rest of the 'wild*' options.
+
+      I thought the interface was slightly different and would let me do the
+      matching, not just supply a list stuff to match against.
+
+      So, making a command that can recursively search for completions is
+      slightly more complicated than I thought.  I have some other ideas on
+      how it could be done.  None of them use the standard completion
+      interface (Tab and CTRL-D).  Instead of creating a command that has file
+      completion through 'path', it would be possible to add another command
+      mode mapping that could do completion of files as found in a path.  Off
+      the top of my head, I can think of three or four versions or modes that
+      would be useful.
+
+	* search within current "project"  where a "project" can be defined as a
+	  cvs tree, however subversion uses to delimit a "project", an Axe
+	  design tree (AMD impl/CAD specific stuff), or whatever
+	* search b:FindComplete levels below path returned by getcwd()
+	* search number of levels relative to expand("%:h")
+	* search within &path
+
+      I would probably have a mode variable and just one set of mappings
+      because I'm not sure I would use all the 'modes' at once.  It think it
+      might be useful to have different modes for different filetypes or
+      particular locations.  Anyway, being able to do that would be useful.  I
+      will add this to my TODO list and may eventually get to implementing it.
+      I'll let you know if/when I do.  If you get motivated to write the
+      mappings, feel free to stop by and I can give you a brain dump of the
+      Vim stuff that will help you get 'er done.
+
+      BTW I looked at the Vim7 source tree and it seems like making the
+      completion more extensible is one of the features they are working on.
+      This exact thing is in the todo list if you look in :help todo.txt and
+      search for  "expand files found in 'path'", you can see what I'm talking
+      about.  It is listed as priority 8 which means he wants to get it in
+      ASAP but the list is pretty long too.
+
+      Sorry for the length in my reply.
+
+      -T
+
+
+
+
+      On Wed, 30 Nov 2005, Tim Snyder wrote:
+
+      > 265.024
+      > 
+      > I am on my way back to work from lunch.  Should be there by 1:40.  I have
+      > a meeting from 2-3. If you
+      > don't catch me before it, I will be around afterwards.
+      > 
+      > -Tim
+      > 
+      > 
+      > On Wed, 30 Nov 2005, Christopher Svec wrote:
+      > 
+      > > Hey, I've got a vim question for you - where do you sit (that's not the
+      > > vim question, though) - it's easier to ask in person.
+      > > 
+      > > Thanks,
+      > > 
+      > > -svec
+      > > 
+      > 
+      > --
+      > Tim Snyder
+      > 
+      > Advanced Micro Devices Austin South Design Center
+      > 5204 E. Ben White M/S 625,
+      > Austin, TX  78741
+      > office: (512)-602-6688
+      > cell  : (512)-627-0836
+      > txtmsg: 5126270836@vtext.com
+      > e-mail: Tim.Snyder@amd.com
+      > 
+
+      --
+      Tim Snyder
+
+      Advanced Micro Devices
+      Austin South Design Center
+      5204 E. Ben White M/S 625,
+      Austin, TX  78741
+      office: (512)-602-6688
+      cell  : (512)-627-0836
+      txtmsg: 5126270836@vtext.com
+      e-mail: Tim.Snyder@amd.com
+   
+  * Find command to upsize and downsize font to effectively zoom in and out?  {{{1
+      * Should probably look inside GTK for hotkey to do that, it is probably
+        part of the GUI toolkit itself
+
+  * Add Words to ToDo syntax globally	{{{1
+      * Did this partially by adding a seperate syntax keyword group in .vimrc and 
+        applying it via an |autocommand| on |FileType|. However, they won't get colored
+	like this if the rule is later than another one (which they are because |FileType| fires
+	after all the filetype plugin crap has been loaded.  I'll have to see how well my
+	latest hack works.
+      * Looks like I need to have a function that goes through and adds this to all 
+        of the "contains=" statements of the currently loaded syntax.  Two
+	approaches at first glance:
+	   1.  Create a command that makes a custom version of the syntax file
+	       Dislike because it creates 50000 files and seems wasteful,
+	       forces people to use the |tsnyder-using-official| method of
+	       using my base setup. 
+	       Like because it is fast.
+	   2.  Dynamically run through the currently defined containers and
+	       dump my contained keywords in the "contains=" list
+	       Like because it is elegant and efficient but could also be
+	       slow.
+      * Any !WORD! blah blah blah !WORD! combination with paramaterized number of !
+					  }}}
+
+--------------------------------------------------------------------------------
+* Completed
+  * Fix visual enclosure mappings to not move left for closing unless
+    characters were added on that line
+      needed to get rid of extra spaces on end of mapping - tsnyder 30-Nov-05
+
+
+Copyright: see |manual-copyright|  vim:tw=78:ts=8:ft=help:norl:isk+=(,),/,+,-,\:,':tags+=$VIMRUNTIME/doc/tags:fdm=marker:fdc=2
