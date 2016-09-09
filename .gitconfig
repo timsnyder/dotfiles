@@ -8,3 +8,5 @@
 	email = snyder.tim@gmail.com
 [credential]
 	helper = cache
+[push]
+	default = simple
