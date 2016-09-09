@@ -8,7 +8,7 @@ fpath=(~/zsh_funcs $fpath)
 
 autoload -Uz promptinit
 promptinit
-prompt adam1
+prompt tsnyder
 
 autoload -Uz vcs_info
 
