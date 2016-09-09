@@ -1,5 +1,5 @@
 " vim global plugin that provides easy code commenting for various file types
-" Last Change:  tsnyder 16-Jul-16 11:53 
+" Last Change:  tsnyder 08-Sep-16 19:28 
 " Maintainer:   Martin Grenfell <mrg39 at student.canterbury.ac.nz>
 let s:NERD_comments_version = 1.59
 
@@ -344,6 +344,10 @@ function s:SetUpForNewFiletype(filetype,force)
         call <SID>MapDelimiters("--", "")
     elseif a:filetype == "geek" 
         call <SID>MapDelimiters("GEEK_COMMENT:", "")
+    elseif a:filetype == "gitcommit" 
+        call <SID>MapDelimiters("#", "")
+    elseif a:filetype == "gitconfig" 
+        call <SID>MapDelimiters("#", "")
     elseif a:filetype == "gnuplot" 
         call <SID>MapDelimiters("#","")
     elseif a:filetype == "gtkrc" 
