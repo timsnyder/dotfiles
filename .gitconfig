@@ -1,12 +1,156 @@
 [alias]
-	st = status
-	head = rev-parse --short HEAD
+    # Help conforming to git-enforced whitespace rules:
+    # =================================================
+    #
+    # If you have the default .git/hooks/pre-commit enabled, then git will prevent you from having
+    # most of the wasteful (and in the case of languages that are whitespace sensitive like python
+    # or TCL or makefiles, potentially errorprone) whitespace in your changesets.  It is possible
+    # to configure most editors to avoid adding this whitespace but:
+    #   * I don't want whitespace I didn't add hilighted red in all of the code I read
+    #   * I don't want to re-implement the whitespace rules and git diffing to know which whitespace I added
+    #   * git already knows how to fix whitespace but the fixing code is in 'git apply' and that
+    #     only helps you if you actually use a patch-oriented workflow
+    # 
+    # From http://gitster.livejournal.com/45019.html with the following mods:
+    #      git executes aliases in the root of the working directory, so it doesn't work if you give it
+    #      relative paths to files you want to add.... grrr
+    #         However, GIT_PREFIX is set so that you can cd back to it.  double grrr.
+    #         Finally, if you actually do run the command at the toplevel $GIT_PREFIX is set to "" emptystring. triple grrr.
+    #
+    #      the (git diff --exit-code --no-ext-diff -- \"$@\" && git diff --no-ext-diff -- /dev/null \"$@\")
+    #      part is there to handle the case where the file hasn't been added to the index yet.
+    #      However, this solution conflicts with the case where there really aren't any differences
+    #      to add.  Need to do a better lookup to see if the file is already in the index.  If it
+    #      is, then do what I currently have as the alias but only do the checkout if the apply was
+    #      successful, else you have to do the diff against /dev/null to add the file for the first
+    #      time into the index.  Note, that this is further complicated by the fact that diffing
+    #      against /dev/null can't be done for multiple files at once the way I'm currently calling
+    #      it.  Would be better if there was just an option to diff that would treat files that
+    #      aren't in the index as empty if you explicitly ask for them to be diffed on the cmdline
+    #      (possibly with a warning to STDERR).
+    #
+    #           The way to fix this might be to look for all names in the index, For any not there, then put
+    #           /dev/null into the index as those names, then retry.
+    #
+    #           Actually, do this.  First, do 'git add -N "$@"' to add all files to the index with no
+    #           content then actually do the add
+    # 
+    wsadd = "!sh -xc 'test -n \"$GIT_PREFIX\" && cd $GIT_PREFIX; git add -N \"$@\" && git diff --no-ext-diff -- \"$@\"  | git apply --cached --whitespace=fix && git checkout -- ${1-.} \"$@\"' -"
+    # do wsadd on all modified files
+    wsaddm = "!git status --short | grep '^ M' | awk '{print $2}' | xargs git wsadd"
+
+    # list unique authors 
+    # NOTE: log inside an alias doesn't map relative filesystem paths to git-tree root relative paths
+    #       and the alias is envoked at the top of the git repo. that's why we need to cd back into
+    #       $GIT_PREFIX before running the command
+    acpairs    = "!sh -c 'test -n \"$GIT_PREFIX\" && cd $GIT_PREFIX; git log --format=\"format:%aN<%aE>, %cN<%cE>,\" -- \"$@\" | sort -u' -"
+    authors    = "!sh -c 'test -n \"$GIT_PREFIX\" && cd $GIT_PREFIX; git log --format=\"format:%aN<%aE>,\" -- \"$@\" | sort | uniq -c' -"
+    committers = "!sh -c 'test -n \"$GIT_PREFIX\" && cd $GIT_PREFIX; git log --format=\"format:%cN<%cE>,\" -- \"$@\" | sort | uniq -c' -"
+
+    # shorthand for 'git gui blame HEAD <whatever>'
+    gb = gui blame HEAD
+
+    # Variations on showing you what's coming in and going out
+    # only useful when workign with a branch that has '@{upstream}' defined
+    gin  = !git fetch && gitk $(git merge-base @{u} HEAD)~..@{u}
+    gout = !git fetch && gitk @{u}~..HEAD
+    in   = !git fetch && git log --abbrev=9 --format=short ..@{u}
+    out  = !git fetch && git log --abbrev=9 --format=short @{u}..
+
+    # Show a text based graphical log
+    lol  = log --pretty=oneline --abbrev-commit --graph --decorate --cc
+
+    co   = checkout
+    d    = describe
+    st   = status
+    stat = status
+    ss   = status -sb
+    sb   = show-branch
+    di   = diff-index -p --cached
+    ws   = diff-index --check --cached HEAD
+
+    sm   = submodule
+    dsm  = !git --no-pager diff --submodule=log
+
+    rc   = rebase --continue
+    mt   = mergetool
+    dt   = mergetool
+    dd   = difftool -d --tool gvimdiffdir
+
+    # just give me the short version of the sha I have checked out, sheesh.
+    head = rev-parse --short HEAD
+
+[advice]
+    detachedHead = false
+[diff]
+    tool = gvimdiff
+    # detect renames and file copies instead of reporting whole file chunks
+    renames = copies
+[difftool]
+    prompt = false
+[difftool.kccmp]
+    cmd = /sarc/spa/users/tsnyder/src/kccmp-0.3/kccmp $LOCAL $MERGED
+[difftool.gvimdiffdir]
+    # dirdiff seems to only give one path, $LOCAL. 
+    # $MERGED seems to be undef when called with -d
+    cmd = gvim -f '+execute \"DirDiff\" fnameescape(argv(0)) fnameescape(fnamemodify(argv(0),\":h\").\"/right\")' $LOCAL
+
+[merge]
+    tool = gvimdiff
+    defaultToUpstream = true
+[mergetool]
+    prompt = false
+
+[log]
+    # this breaks sim
+    # abbrevCommit = true  # added between 1.7.3.4 and 1.7.11.4
+
 [color]
-	ui = auto
+  ui = auto
 [user]
 	name = Tim Snyder
 	email = snyder.tim@gmail.com
 [credential]
 	helper = cache
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
+  smAhead = green
+  smPush = green
+
+[branch]
+    autosetuprebase = always
+
+[core]
+    sharedRepository = 0x664
+    # This breaks sim
+    abbrev = 9
+
+# warning: push.default is unset; its implicit value is changing in
+# Git 2.0 from 'matching' to 'simple'. To squelch this message
+# and maintain the current behavior after the default changes, use:
+# 
+#   git config --global push.default matching
+# 
+# To squelch this message and adopt the new behavior now, use:
+# 
+#   git config --global push.default simple
+# 
+# See 'git help config' and search for 'push.default' for further information.
+# (the 'simple' mode was introduced in Git 1.7.11. Use the similar mode
+# 'current' instead of 'simple' if you sometimes use older versions of Git)
+
+# switched back to current for now because older versions of git don't have simple
+# and having this in the global config breaks my zsh prompt stuff
 [push]
 	default = simple
