@@ -1,4 +1,4 @@
-*tsnyder_runtime.txt*  startpoint for users of ~tsnyder/.vim runtime files	- Last Change: tsnyder 19-Jul-16 07:41 
+*tsnyder_runtime.txt*  startpoint for users of ~tsnyder/.vim runtime files	- Last Change: tsnyder 23-Jul-16 10:22 
 
 						     *tsnyder* *tsnyder_runtime* 
 This file is the toplevel |online-help| file for the /home/tsnyder/rel/vim
@@ -435,8 +435,6 @@ interface.
    the vim-included script so the configuration values for all the colors
    would be shown instead of being grepped out - tsnyder 22-Jul-05
 
-   KnownBug: This opens two windows right now and I don't rememeber it doing that...
-	     - tsnyder 08-Nov-05
 
 							      *:RTLtoPLAstart* 
 :RTLtoPLAstart[!] {input matrix width}
