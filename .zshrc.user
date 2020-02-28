@@ -8,8 +8,19 @@ case "${unameOut}" in
 esac
 
 
-# ADD NX to the path
-export PATH=$PATH:/usr/NX/bin
+if [ -d /usr/NX/bin ]; then
+    export PATH=$PATH:/usr/NX/bin
+fi
+
+# mac puts direct /opt/X11/bin in path, don't need it there twice
+#if [ -d /usr/X11/bin ]; then
+#    export PATH=$PATH:/usr/X11/bin
+#fi
+
+
+if [ -d "${HOME}/bin" ]; then
+    export PATH=$PATH:"$HOME/bin"
+fi
 
 case "${machine}" in
     Linux) 
@@ -18,6 +29,9 @@ case "${machine}" in
 	# the Catalina vim has a bug where ':set diffopt+=iwhite' results in a nonsensical error
 	# put macvim early in path to override the default vim
 	export PATH=/Applications/MacVim.app/Contents/bin:$PATH
+
+	# put vncviewer app on the path
+	export PATH="$PATH:/Applications/VNC Viewer.app/Contents/MacOS"
 	;;
 esac
 
@@ -25,36 +39,7 @@ esac
 # Add my functions to fpath
 fpath=(~/zsh_funcs $fpath)
 
-# Set up the prompt
-
-autoload -Uz promptinit
-promptinit
-prompt tsnyder
-
-autoload -Uz vcs_info
-
-
-setopt histignorealldups sharehistory
-
-# Use vi keybindings
-bindkey -v
-
-# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
-HISTSIZE=1000
-SAVEHIST=1000
-HISTFILE=~/.zsh_history
-
-# Use modern completion system
-autoload -Uz compinit
-compinit
-
-
-
-zstyle ':completion:*' auto-description 'specify: %d'
-zstyle ':completion:*' completer _expand _complete _correct _approximate
-zstyle ':completion:*' format 'Completing %d'
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*' menu select=2
+export EDITOR=vim
 
 #eval "$(dircolors -b)"
 # mac OSX doesn't have dircolors from gnu coreutils. If you install homebrew coreutils, you can get
@@ -73,17 +58,17 @@ case "${machine}" in
 	export LSCOLORS='ExGxFxdaCxDaDahbadacec'
 	;;
 esac
-
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' list-colors ''
-zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
-zstyle ':completion:*' menu select=long
-zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-zstyle ':completion:*' use-compctl false
-zstyle ':completion:*' verbose true
 
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
-zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+   
+docker.socat() {
+   # use on macos to connect the docker display to XQuartz
+   socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\"
+}
 
 
+# set spaceship_prompt to differentiate virtualenv environments
+SPACESHIP_VENV_SYMBOL="ⓥ "
+
+
+. ~/.zshrc.local
