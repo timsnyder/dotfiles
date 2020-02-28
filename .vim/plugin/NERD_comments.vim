@@ -1,5 +1,5 @@
 " vim global plugin that provides easy code commenting for various file types
-" Last Change:  tsnyder 08-Sep-16 19:28 
+" Last Change:  timothys 26-Feb-20 14:18
 " Maintainer:   Martin Grenfell <mrg39 at student.canterbury.ac.nz>
 let s:NERD_comments_version = 1.59
 
@@ -258,6 +258,8 @@ function s:SetUpForNewFiletype(filetype,force)
         call <SID>MapDelimitersWithAlternative("\\\/\\\/","", "\\\/\\\*","\\\*\\\/", g:NERD_use_c_style_clean_comments )
     elseif a:filetype == "clipper" 
         call <SID>MapDelimitersWithAlternative("\\\/\\\/","", "\\\/\\\*","\\\*\\\/", g:NERD_use_c_style_clipper_comments )
+    elseif a:filetype == "cmake"
+        call <SID>MapDelimiters("#", "")
     elseif a:filetype == "coffee" 
         call <SID>MapDelimitersWithAlternative("#", "", "###", "###", g:NERD_use_multiline_coffee_comments)
     elseif a:filetype == "conf" 
@@ -404,6 +406,9 @@ function s:SetUpForNewFiletype(filetype,force)
         call <SID>MapDelimiters("#", "")
     elseif a:filetype == "jproperties" 
         call <SID>MapDelimiters("#","")
+    elseif a:filetype == "json"
+	" json doesn't support comments.  'Disable' them by setting them all to empty string
+	call <SID>MapDelimitersWithAlternative("","", "", "", 0)
     elseif a:filetype == "jsp" 
         call <SID>MapDelimiters("<%--", "--%>")
     elseif a:filetype == "kix" 
@@ -449,6 +454,8 @@ function s:SetUpForNewFiletype(filetype,force)
         call <SID>MapDelimiters("","") 
     elseif a:filetype == "maple" 
         call <SID>MapDelimiters("#", "")
+    elseif a:filetype == "markdown"
+        call <SID>MapDelimiters("#","")
     elseif a:filetype == "masm" 
         call <SID>MapDelimiters(";", "")
     elseif a:filetype == "master" 
@@ -746,6 +753,8 @@ function s:SetUpForNewFiletype(filetype,force)
         call <SID>MapDelimiters("<!--","-->") 
     elseif a:filetype == "yacc" 
         call <SID>MapDelimiters("\\\/\\\*","\\\*\\\/")
+    elseif a:filetype == "yaml"
+        call <SID>MapDelimiters("#", "")
     elseif a:filetype == "z8a" 
         call <SID>MapDelimiters(";", "")
 
