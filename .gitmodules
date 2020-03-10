@@ -1,0 +1,4 @@
+[submodule ".vim/bundle/vim-dirdiff"]
+	path = .vim/bundle/vim-dirdiff
+	url = https://github.com/will133/vim-dirdiff.git
+	branch = master
