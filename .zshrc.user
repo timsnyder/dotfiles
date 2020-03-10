@@ -70,5 +70,8 @@ docker.socat() {
 # set spaceship_prompt to differentiate virtualenv environments
 SPACESHIP_VENV_SYMBOL="ⓥ "
 
+# configure my git status timeout to 1s
+SPACESHIP_GIT_STATUS_TIMEOUT_DELAY="1s"
+
 
 . ~/.zshrc.local
