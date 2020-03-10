@@ -1,7 +1,7 @@
 " VIM Configuration File
 " Author:   Tim Snyder <tim.snyder@amd.com>
 " Modeline: vim:fdc=2:fml=1:fdm=marker:fcs=fold\:\ 
-" Last Modified: tsnyder 19-Jul-16 07:40 
+" Last Modified: timothys 10-Mar-20 13:22
 " Note: If you are totally lost with folding turned on, type 'zi' in Normal mode
 "	or do Tools->Folding->Enable/Disable Folding in GUI menus
 "    TODO List	{{{1
@@ -212,6 +212,7 @@ set winminheight=0
 " Tabbing and Indentation	    {{{2
 " =======================
 
+" NOTE: expandtab is handled by filetype plugins because some crap (i.e. Makefiles) uses them syntactically
 set smarttab
 " switched shiftwidth back to 4 because CAD uses that normally.  Want to dynamically detect
 " whichever one is being used and set it like that at some point... - tsnyder 27-Apr-06
@@ -221,6 +222,10 @@ set shiftwidth=4
 set autoindent
 set smartindent
 
+" End-of-File Newlines	    {{{2
+" ====================
+" Do not add an extra newline at the end of the file when you write it out.
+set nofixendofline
 
 " Window Title			{{{2
 " ============
