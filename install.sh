@@ -32,6 +32,9 @@ esac
 bin=$(dirname $(readlink -e $0))
 cd $bin
 
+# we have submodules now for vim plugins. Make sure they are up to date
+git submodule update --init --recursive
+
 export ZSH="$HOME/.oh-my-zsh"
 
 if [[ -d "$ZSH" ]]; then
@@ -79,5 +82,11 @@ git ls-tree HEAD --name-only | \
     grep -v README | grep -v .gitignore | grep -v install.sh | grep -v install-powerline-fonts.sh | grep '\.*.user' \
     xargs -n1 readlink -e | \
     xargs -n1 bash -vc 'echo ". $1" into "$HOME/${${1%.user}##*/"' 
+
+
+
+# Now that we've got all of the dotfiles in place, run vim to update the Help index
+# with all of the plugin submodules
+vim -c "Helptags | q"
 
 
