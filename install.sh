@@ -68,7 +68,7 @@ fi
 # all files at toplevel of this repo get symlinked from $HOME, with
 # a few exclusions
 git ls-tree HEAD --name-only | \
-    grep -v README | grep -v .gitignore | grep -v install.sh | grep -v install-powerline-fonts.sh | grep -v '\.*.user' \
+    grep -v README | grep -v install.sh | grep -v install-powerline-fonts.sh | grep -v '\.*.user' \
     xargs -n1 readlink -e | \
     xargs ln -s -v --backup=numbered -t $HOME
 
@@ -79,7 +79,7 @@ git ls-tree HEAD --name-only | \
 # This leaves the real files out of version control so that they can also contain
 # secret crap I don't want to have in version control
 git ls-tree HEAD --name-only | \
-    grep -v README | grep -v .gitignore | grep -v install.sh | grep -v install-powerline-fonts.sh | grep '\.*.user' \
+    grep -v README | grep -v install.sh | grep -v install-powerline-fonts.sh | grep '\.*.user' \
     xargs -n1 readlink -e | \
     xargs -n1 bash -vc 'echo ". $1" into "$HOME/${${1%.user}##*/"' 
 
