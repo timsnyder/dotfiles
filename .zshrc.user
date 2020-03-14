@@ -73,9 +73,13 @@ SPACESHIP_VENV_SYMBOL="ⓥ "
 # configure my git status timeout to 1s
 SPACESHIP_GIT_STATUS_TIMEOUT_DELAY="1s"
 
+spaceship_vi_mode_enable
+
 git-owner ()
 {
     curl https://api.github.com/repos/sifive/$@/collaborators\?access_token=$(cat ~/github_sifive_token) | jq '[ .[] | select(.permissions.admin == true) | .login ]'
 }
 
-. ~/.zshrc.local
+if [[ -f  ~/.zshrc.local ]]; then
+    . ~/.zshrc.local
+fi
