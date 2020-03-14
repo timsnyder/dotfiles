@@ -80,8 +80,7 @@ fi
 git ls-tree HEAD --name-only | \
     grep -v README | grep -v install.sh | grep -v install-powerline-fonts.sh | grep -v '\.*.user' |\
     xargs -I{} -n1 python -c 'import os; print(os.path.realpath("'{}'"))' |\
-    xargs -n1 -x -t -I{} ln -f -s  {} $HOME
-
+    xargs -n1 -x -t -I{} ln -s -v --backup=numbered {} $HOME
 
 # prepare for other things to muck with .bashrc, .profile, .zshrc
 # e.g. conda init
