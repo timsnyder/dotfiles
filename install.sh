@@ -51,7 +51,7 @@ fi
 # install spaceship prompt
 ZSH_CUSTOM="$ZSH/custom"
 SPACESHIP="$ZSH_CUSTOM/themes/spaceship-prompt"
-if [[ -d "SPACESHIP" ]]; then
+if [[ -d "$SPACESHIP" ]]; then
     echo "Skipping spaceship-prompt install because '$SPACESHIP' already exists"
 else
     echo "Installing spaceship-prompt"
@@ -61,6 +61,26 @@ else
     )
 fi
 
+
+ZSH_AUTO="$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+if [[ -d "ZSH_AUTO" ]]; then
+    echo "Skipping zsh-autosuggestions install because '$ZSH_AUTO' already exists"
+else
+    echo "Installing zsh-autosuggestions"
+    (   set -x
+	git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_AUTO"
+    )
+fi
+
+ZSH_HISTDB="$ZSH_HISTDB/plugins/zsh-histdb"
+if [[ -d "ZSH_HISTDB" ]]; then
+    echo "Skipping zsh-histdb install because '$ZSH_HISTDB' already exists"
+else
+    echo "Installing zsh-histdb"
+    (   set -x
+	git clone https://github.com/larkey/zsh-histdb "$ZSH_HISTDB"
+    )
+fi
 
 
 
