@@ -1,5 +1,8 @@
 #!/bin/sh
 
+set -o pipefail
+set -e
+
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     machine=Linux;;
@@ -9,27 +12,14 @@ case "${unameOut}" in
     *)          machine="UNKNOWN:${unameOut}"
 esac
 
-case "${machine}" in
-    Linux)
-	;;
-    Mac)
-	# use readlink from homebrew build of gnu coreutils
-	gnubin="/usr/local/opt/coreutils/libexec/gnubin"
-	if [[ ! -d "$gnubin" ]]; then
-	    echo "Error: can't find directory '$gnubin'"
-	    echo "       install https://formulae.brew.sh/formula/coreutils"
-	    echo "       before trying to setup your homedir"
-	    exit 1
-	fi
+pyreadlink() {
+    python -c 'import os; print(os.path.realpath("'"$1"'"))'
+}
 
-	PATH="${gnubin}:$PATH"
-
-	;;
-esac
 
 
 # script is intended to be run in the directory where it lives
-bin=$(dirname $(readlink -e $0))
+bin=$(dirname $(pyreadlink $0))
 cd $bin
 
 # we have submodules now for vim plugins. Make sure they are up to date
@@ -72,13 +62,13 @@ else
     )
 fi
 
-ZSH_HISTDB="$ZSH_HISTDB/plugins/zsh-histdb"
+ZSH_HISTDB="$ZSH_CUSTOM/plugins/zsh-histdb"
 if [[ -d "$ZSH_HISTDB" ]]; then
     echo "Skipping zsh-histdb install because '$ZSH_HISTDB' already exists"
 else
     echo "Installing zsh-histdb"
     (   set -x
-	git clone https://github.com/larkey/zsh-histdb "$ZSH_HISTDB"
+	git clone https://github.com/larkery/zsh-histdb "$ZSH_HISTDB"
     )
 fi
 
@@ -89,8 +79,9 @@ fi
 # a few exclusions
 git ls-tree HEAD --name-only | \
     grep -v README | grep -v install.sh | grep -v install-powerline-fonts.sh | grep -v '\.*.user' |\
-    xargs -n1 readlink -e | \
-    xargs ln -s -v --backup=numbered -t $HOME
+    xargs -I{} -n1 python -c 'import os; print(os.path.realpath("'{}'"))' |\
+    xargs -n1 -x -t -I{} ln -f -s  {} $HOME
+
 
 # prepare for other things to muck with .bashrc, .profile, .zshrc
 # e.g. conda init
@@ -100,8 +91,8 @@ git ls-tree HEAD --name-only | \
 # secret crap I don't want to have in version control
 git ls-tree HEAD --name-only | \
     grep -v README | grep -v install.sh | grep -v install-powerline-fonts.sh | grep '\.*.user' |\
-    xargs -n1 readlink -e | \
-    xargs -n1 bash -vc 'echo ". $1" into "$HOME/${${1%.user}##*/"' 
+    xargs -I{} -n1 python -c 'import os; print(os.path.realpath("'{}'"))' | \
+    xargs -n1 -x -t bash -vc 'echo ". $0" >> "$HOME/$(basename ${0%.user})"'
 
 
 
