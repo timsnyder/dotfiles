@@ -1,3 +1,10 @@
 .c9
 # vim swapfiles
 .*.sw[opqrst]
+
+# IDEA crap
+.idea
+cmake-build-*
+
+# git merge conflict files
+*.orig
