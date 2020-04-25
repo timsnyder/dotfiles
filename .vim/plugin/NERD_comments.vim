@@ -1,5 +1,5 @@
 " vim global plugin that provides easy code commenting for various file types
-" Last Change:  timothys 08-Mar-20 15:10
+" Last Change:  timothys 25-Apr-20 08:11 
 " Maintainer:   Martin Grenfell <mrg39 at student.canterbury.ac.nz>
 let s:NERD_comments_version = 1.59
 
@@ -566,6 +566,8 @@ function s:SetUpForNewFiletype(filetype,force)
         call <SID>MapDelimiters("#", "")
     elseif a:filetype == "python" 
         call <SID>MapDelimiters("#","") 
+    elseif a:filetype == "pyrex" 
+        call <SID>MapDelimiters("#","") 
     " tired of getting error messages for quickfix files - tsnyder 10-Dec-05
     elseif a:filetype == "qf"		  
         call <SID>MapDelimiters("","") 
@@ -601,6 +603,8 @@ function s:SetUpForNewFiletype(filetype,force)
         call <SID>MapDelimiters("\\\/\\\*","\\\*\\\/")
     elseif a:filetype == "sather" 
         call <SID>MapDelimiters("--", "")
+    elseif a:filetype == "scala" 
+       call <SID>MapDelimitersWithAlternative("\\\/\\\*","\\\*\\\/", "\\\/\\\/", "", g:NERD_use_single_part_c_comments) 
     elseif a:filetype == "scheme" 
         call <SID>MapDelimiters(";", "")
     elseif a:filetype == "scilab" 
