@@ -155,3 +155,6 @@
 # and having this in the global config breaks my zsh prompt stuff
 [push]
 	default = simple
+
+[submodule]
+    fetchJobs=4
