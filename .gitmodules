@@ -2,3 +2,7 @@
 	path = .vim/bundle/vim-dirdiff
 	url = https://github.com/will133/vim-dirdiff.git
 	branch = master
+[submodule ".vim/bundle/vim-fugitive"]
+	path = .vim/bundle/vim-fugitive
+	url = https://github.com/tpope/vim-fugitive
+	branch = master
