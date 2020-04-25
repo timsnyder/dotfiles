@@ -46,8 +46,8 @@ if [[ -d "$SPACESHIP" ]]; then
 else
     echo "Installing spaceship-prompt"
     (   set -x
-	git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
-	ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+	git clone https://github.com/denysdovhan/spaceship-prompt.git "$SPACESHIP"
+	ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$SPACESHIP"
     )
 fi
 
@@ -89,6 +89,9 @@ git ls-tree HEAD --name-only | \
 # So, all .*.user files also need to append themselves to the real dotfile
 # This leaves the real files out of version control so that they can also contain
 # secret crap I don't want to have in version control
+
+
+# TODO this ends up still adding crap after I've done it the first time if I rerun install.sh
 git ls-tree HEAD --name-only | \
     grep -v README | grep -v install.sh | grep -v install-powerline-fonts.sh | grep '\.*.user' |\
     xargs -I{} -n1 python -c 'import os; print(os.path.realpath("'{}'"))' | \
