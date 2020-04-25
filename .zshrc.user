@@ -32,6 +32,10 @@ case "${machine}" in
 
 	# put vncviewer app on the path
 	export PATH="$PATH:/Applications/VNC Viewer.app/Contents/MacOS"
+
+	# put vncviewer app on the path
+	export PATH="$PATH:/Applications/yEd.app/Contents/MacOS"
+	alias yed=yEd
 	;;
 esac
 
