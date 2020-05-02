@@ -112,3 +112,8 @@ conda.mine() {
 	conda.bootstrap "$HOME/opt/miniconda3"
     fi
 }
+
+git.use_sifive_email() {
+    export GIT_AUTHOR_EMAIL=timothy.snyder@sifive.com
+    export GIT_COMMITTER_EMAIL=timothy.snyder@sifive.com
+}
