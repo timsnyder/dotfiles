@@ -5,6 +5,8 @@
 # If not running interactively, don't do anything else
 [ -z "$PS1" ] && return
 
+. "$HOME/dotfiles/common.sh"
+
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
@@ -19,9 +21,6 @@ HISTFILESIZE=2000
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
-
-# make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
@@ -39,8 +38,6 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
 
-PS1='\[\033[01;32m\]${C9_USER}\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 " (%s)") $ '
-
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
@@ -52,9 +49,6 @@ esac
 
 export rvm_silence_path_mismatch_check_flag=1
 
-
-# added by Miniconda3 4.1.11 installer
-export PATH="/home/ubuntu/miniconda3/bin:$PATH"
 
 if [ -f ~/.sauce_id.sh ]; then
     source ~/.sauce_id.sh
