@@ -54,3 +54,8 @@ if [ -f ~/.sauce_id.sh ]; then
     source ~/.sauce_id.sh
 fi
 
+
+# activate starship prompt
+if type starship >& /dev/null; then
+    eval "$(starship init bash)"
+fi
