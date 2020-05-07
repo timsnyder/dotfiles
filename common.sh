@@ -108,7 +108,7 @@ conda.sparta() {
 conda.mine() {
     if [[ -d "$HOME/miniconda3" ]]; then
 	conda.bootstrap "$HOME/miniconda3"
-    else if [[ -d "$HOME/opt/miniconda3" ]]; then
+    elif [[ -d "$HOME/opt/miniconda3" ]]; then
 	conda.bootstrap "$HOME/opt/miniconda3"
     fi
 }
