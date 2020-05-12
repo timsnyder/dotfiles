@@ -1,7 +1,7 @@
 " VIM Configuration File
 " Author:   Tim Snyder <tim.snyder@amd.com>
 " Modeline: vim:fdc=2:fml=1:fdm=marker:fcs=fold\:\ 
-" Last Modified: timothys 10-Mar-20 13:22
+" Last Modified: timothys 08-May-20 05:48 
 " Note: If you are totally lost with folding turned on, type 'zi' in Normal mode
 "	or do Tools->Folding->Enable/Disable Folding in GUI menus
 "    TODO List	{{{1
@@ -150,6 +150,7 @@ endif
 " Formatting and Appearance		    {{{2
 " =========================
 
+" To see decoder-ring for formatoptions :help fo-table
 set formatoptions=tcqorb "tried 'a' but it sucks lines into end of line comments added 'ab' flags - tsnyder 22-Jul-05
 set guioptions=aAegimr
 
@@ -165,6 +166,9 @@ set linebreak
 
 " In insert mode, allow backspacing lines together and initial indentation
 set backspace=indent,eol
+
+" Setup 'list' mode to show everything
+set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
 
 " Turn on syntax coloring, filetype plugins and filetype intenting {{{3
 " ================================================================
