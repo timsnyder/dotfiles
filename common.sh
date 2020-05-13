@@ -117,3 +117,10 @@ git.use_sifive_email() {
     export GIT_AUTHOR_EMAIL=timothy.snyder@sifive.com
     export GIT_COMMITTER_EMAIL=timothy.snyder@sifive.com
 }
+
+log.date() {
+    # call date how log-stats does it
+    # Nanoseconds truncated to 6 digits because Python can only parse up to
+    # microseconds
+    date --utc +%Y-%m-%dT%H:%M:%S.%6N%z
+}
