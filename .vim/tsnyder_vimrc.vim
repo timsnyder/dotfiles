@@ -1,7 +1,7 @@
 " VIM Configuration File
 " Author:   Tim Snyder <tim.snyder@amd.com>
 " Modeline: vim:fdc=2:fml=1:fdm=marker:fcs=fold\:\ 
-" Last Modified: timothys 08-May-20 05:48 
+" Last Modified: centos 03-Jun-20 14:14 
 " Note: If you are totally lost with folding turned on, type 'zi' in Normal mode
 "	or do Tools->Folding->Enable/Disable Folding in GUI menus
 "    TODO List	{{{1
@@ -229,7 +229,9 @@ set smartindent
 " End-of-File Newlines	    {{{2
 " ====================
 " Do not add an extra newline at the end of the file when you write it out.
-set nofixendofline
+if exists('+fixendofline')
+  set nofixendofline
+endif
 
 " Window Title			{{{2
 " ============
