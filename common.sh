@@ -77,6 +77,9 @@ SPACESHIP_GIT_STATUS_TIMEOUT_DELAY="1s"
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
+# make zstd use level 9 by default instead of it's builtin 3
+export ZSTD_CLEVEL=9
+
 conda.bootstrap () {
     if [[ $# -ne 1 ]]; then
 	echo "Usage: conda.bootstrap <miniconda install path>"
