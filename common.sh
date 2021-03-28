@@ -54,6 +54,32 @@ case "${machine}" in
 	;;
 esac
 
+gt ()
+{
+    # cd to root of current git repo
+    top=$(git rev-parse --show-toplevel)
+    if [[ -d "$top" ]]; then
+	cmd="cd $top"
+	if set -o | grep '^xtrace[[:space:]]\+off' 2>&1 >/dev/null; then
+	    echo "+ $cmd"
+	fi
+	eval "$cmd"
+    else
+	echo "can't cd to non-existant directory:'$top'"
+	return 1
+    fi
+}
+
+gtt ()
+{
+    # cd to root of topmost git superproject
+    gt
+    while [[ "$(git -C .. rev-parse --is-inside-work-tree 2>/dev/null)" == true ]]; do
+	cd ..
+	gt
+    done
+}
+
 git-owner ()
 {
     if [[ ! -f ~/github_sifive_token ]]; then
