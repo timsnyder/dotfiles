@@ -10,3 +10,6 @@
 	path = .vim/bundle/firrtl-syntax
 	url = https://github.com/azidar/firrtl-syntax.git
 	branch = master
+[submodule ".vim/bundle/ctrlp"]
+	path = .vim/bundle/ctrlp
+	url = https://github.com/ctrlpvim/ctrlp.vim.git
