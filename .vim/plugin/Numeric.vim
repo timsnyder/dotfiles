@@ -1,6 +1,6 @@
 " Vim global plugin to help with numeric editing
 " Maintainer:	Tim Snyder <Tim.Snyder@amd.com>
-" Last Change:	tsnyder 04-Mar-07 09:08 
+" Last Change:	tims 15-Apr-21 14:34 
 " Modeline: vim:fdc=2:fml=1:fdm=marker:fcs=fold\:\; 
 
 
@@ -11,18 +11,13 @@ set cpo&vim
 " Only do this $USER hasn't already done it with their own version earlier in 'runtimepath' or set
 " the variable to avoid my hotkeys being loaded
 if exists("loaded_Numeric")
+  let &cpo = s:save_cpo
   finish
 endif
 let loaded_Numeric = 1
 
 
-if !has('perl')
-    " have to have the perl interface for floating point arithmetic
-    finish
-endif
 
-
-    
 
 " Default behavior is to emulate <CTRL-A>, <CTRL-X>
 "let s:Numeric_default = '1'
@@ -37,6 +32,15 @@ function s:isNumeric(arg)
     endif
     return 0
 endfunction
+
+" TODO +float was added at some point in the last 15 years.  Rewrite this to use vim +float support
+" if has('float')
+if !has('perl')
+    let &cpo = s:save_cpo
+    " have to have the perl interface for floating point arithmetic
+    finish
+endif
+
 
 " function s:Numeric(dir, ...)   {{{1
 "
