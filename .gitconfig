@@ -86,6 +86,7 @@
     tool = gvimdiff
     # detect renames and file copies instead of reporting whole file chunks
     renames = copies
+    submodule = log
 [difftool]
     prompt = false
 [difftool.kccmp]
@@ -158,3 +159,5 @@
 
 [submodule]
     fetchJobs=4
+[rebase]
+	autoSquash = true

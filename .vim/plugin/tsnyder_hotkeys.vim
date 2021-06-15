@@ -1,6 +1,6 @@
 " Vim global plugin file containing Tim Snyder's hotkey mappings
 " Maintainer:	Tim Snyder <Tim.Snyder@amd.com>
-" Last Change:	tsnyder 04-Mar-07 21:42 
+" Last Change:	centos 18-Dec-20 16:34 
 " Modeline: vim:fdc=2:fml=1:fdm=marker:fcs=fold\:\; 
 
 
@@ -64,7 +64,7 @@ nnoremenu <script> Plugin.Tim\ Snyder's\ Hotkeys.Yank\ To\ EOL      <Plug>Tsnyde
 " Make <M-j>,<M-k>,<M-h>,<M-l> move with a count of UserBigMoveCount {{{1
 
 if !exists("UserBigMoveCount")
-   let UserBigMoveCount = 5
+  let UserBigMoveCount = 5
 endif
 
 exec 'nmap <M-j> '.UserBigMoveCount.'j'
@@ -75,17 +75,26 @@ exec 'nmap <M-l> '.UserBigMoveCount.'l'
 
 " <Plug>TsnyderGoToFile : normal gf -- use :drop instead of :e     {{{1
 if !hasmapto('<Plug>TsnyderGoToFile')
-  map <unique> gf <Plug>TsnyderGoToFile
+  nmap <unique> gf <Plug>TsnyderGoToFile
 endif
-noremap <unique> <script> <Plug>TsnyderGoToFile :drop <cfile> <CR>
+" :drop only works if vim was compiled with a GUI, otherwise, it does nothing and that's annoying
+if has('gui')
+  noremap <unique> <script> <Plug>TsnyderGoToFile :drop <cfile> <CR>
+else
+  noremap <unique> <script> <Plug>TsnyderGoToFile :e <cfile> <CR>
+endif
 
 noremenu <script> Plugin.Tim\ Snyder's\ Hotkeys.GoTo\ File\ Under\ Cursor      <Plug>TsnyderGoToFile
 														  
 " <Plug>TsnyderSplitGoToFile -- :call SplitDrop(<cfile>) instead of :e that f uses   {{{1
 if !hasmapto('<Plug>TsnyderSplitGoToFile')
-   " TODO should these be nmaps?
   " NOTE: this should really be mapped to ^Wf by default
-  map <unique> gsf <Plug>TsnyderSplitGoToFile
+  " :drop only works if vim was compiled with a GUI, otherwise, it does nothing and that's annoying
+  if has('gui')
+    nmap <unique> gsf <Plug>TsnyderSplitGoToFile
+  else
+    nmap <unique> gsf f
+  endif
 endif
 noremap <unique> <script> <Plug>TsnyderSplitGoToFile :Sdrop <cfile><CR>
 

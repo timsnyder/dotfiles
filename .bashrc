@@ -59,3 +59,7 @@ fi
 if type starship >& /dev/null; then
     eval "$(starship init bash)"
 fi
+
+if [ -f ~/.bashrc.local ]; then
+    source ~/.bashrc.local
+fi

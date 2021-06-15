@@ -6,3 +6,7 @@
 	path = .vim/bundle/vim-fugitive
 	url = https://github.com/tpope/vim-fugitive
 	branch = master
+[submodule ".vim/bundle/firrtl-syntax"]
+	path = .vim/bundle/firrtl-syntax
+	url = https://github.com/azidar/firrtl-syntax.git
+	branch = master
