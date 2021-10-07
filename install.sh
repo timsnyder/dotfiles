@@ -25,51 +25,56 @@ cd $bin
 # we have submodules now for vim plugins. Make sure they are up to date
 git submodule update --init --recursive
 
-export ZSH="$HOME/.oh-my-zsh"
+if which zsh >& /dev/null; then
 
-if [[ -d "$ZSH" ]]; then
-    echo "Skipping oh-my-zsh install because '$ZSH' already exists"
+    export ZSH="$HOME/.oh-my-zsh"
+
+    if [[ -d "$ZSH" ]]; then
+	echo "Skipping oh-my-zsh install because '$ZSH' already exists"
+    else
+
+	# install oh-my-zsh first
+	#   --unattended doesn't try to change the default shell or run zsh after doing the install
+	(set -x ; sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended)
+    fi
+
+
+    # install spaceship prompt
+    ZSH_CUSTOM="$ZSH/custom"
+    SPACESHIP="$ZSH_CUSTOM/themes/spaceship-prompt"
+    if [[ -d "$SPACESHIP" ]]; then
+	echo "Skipping spaceship-prompt install because '$SPACESHIP' already exists"
+    else
+	echo "Installing spaceship-prompt"
+	(   set -x
+	    git clone https://github.com/denysdovhan/spaceship-prompt.git "$SPACESHIP"
+	    ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$SPACESHIP"
+	)
+    fi
+
+
+    ZSH_AUTO="$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+    if [[ -d "$ZSH_AUTO" ]]; then
+	echo "Skipping zsh-autosuggestions install because '$ZSH_AUTO' already exists"
+    else
+	echo "Installing zsh-autosuggestions"
+	(   set -x
+	    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_AUTO"
+	)
+    fi
+
+    ZSH_HISTDB="$ZSH_CUSTOM/plugins/zsh-histdb"
+    if [[ -d "$ZSH_HISTDB" ]]; then
+	echo "Skipping zsh-histdb install because '$ZSH_HISTDB' already exists"
+    else
+	echo "Installing zsh-histdb"
+	(   set -x
+	    git clone https://github.com/larkery/zsh-histdb "$ZSH_HISTDB"
+	)
+    fi
+
 else
-
-    # install oh-my-zsh first
-    #   --unattended doesn't try to change the default shell or run zsh after doing the install
-    (set -x ; sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended)
-fi
-
-
-
-# install spaceship prompt
-ZSH_CUSTOM="$ZSH/custom"
-SPACESHIP="$ZSH_CUSTOM/themes/spaceship-prompt"
-if [[ -d "$SPACESHIP" ]]; then
-    echo "Skipping spaceship-prompt install because '$SPACESHIP' already exists"
-else
-    echo "Installing spaceship-prompt"
-    (   set -x
-	git clone https://github.com/denysdovhan/spaceship-prompt.git "$SPACESHIP"
-	ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$SPACESHIP"
-    )
-fi
-
-
-ZSH_AUTO="$ZSH_CUSTOM/plugins/zsh-autosuggestions"
-if [[ -d "$ZSH_AUTO" ]]; then
-    echo "Skipping zsh-autosuggestions install because '$ZSH_AUTO' already exists"
-else
-    echo "Installing zsh-autosuggestions"
-    (   set -x
-	git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_AUTO"
-    )
-fi
-
-ZSH_HISTDB="$ZSH_CUSTOM/plugins/zsh-histdb"
-if [[ -d "$ZSH_HISTDB" ]]; then
-    echo "Skipping zsh-histdb install because '$ZSH_HISTDB' already exists"
-else
-    echo "Installing zsh-histdb"
-    (   set -x
-	git clone https://github.com/larkery/zsh-histdb "$ZSH_HISTDB"
-    )
+    echo "Skipping zsh stuff because zsh isn't installed and it will error. You can rerun aftet installing zsh if you want to have oh-my-zsh"
 fi
 
 
