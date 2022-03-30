@@ -71,11 +71,19 @@
 
     sm   = submodule
     dsm  = !git --no-pager diff --submodule=log
+    smfe = submodule foreach
+    smfer= submodule foreach --recursive
 
     rc   = rebase --continue
     mt   = mergetool
     dt   = mergetool
     dd   = difftool -d --tool gvimdiffdir
+
+    # interactive clean through all submodules
+    ic = "!git clean -Xdi; git smfer git clean -Xdi"
+    # dry-run clean through all submodules
+    cn = "!git clean -Xdn; git smfer git clean -Xdn"
+
 
     # just give me the short version of the sha I have checked out, sheesh.
     head = rev-parse --short HEAD
