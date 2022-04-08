@@ -198,7 +198,9 @@ set history=100		      " keep a lot of command line history (keeps me from getti
 " Mouse				    {{{2
 " =====
 " Enable mouse for xterm
-set mouse=a
+" try using the default here because 'a' when gui is not enabled is annoying because you can't
+" copy/paste using the terminal copy/paste and I'm tired of having to switch this to use it.
+"set mouse=a
 
 " Keyword Program Setup		    {{{2
 " =====================
@@ -436,14 +438,6 @@ command -nargs=1 SetGrabTimeFormat let s:time_format = <q-args>
 " make diffsplit do the splitting vertically without having to remember to type vertical everytime
 cabbrev diffsplit vertical diffsplit
 
-" Make the names of design centers always capitalized  {{{2
-"iab idc IDC
-"iab bdc BDC
-"iab asdc ASDC
-"iab andc ANDC
-"iab svdc SVDC
-
-						      " }}}
 
 " User Commands			{{{1
 " =============
@@ -461,109 +455,6 @@ command! HilightColors runtime syntax/hitest.vim
 " This currently doesn't work, fills up colormap and I haven't spent time to figure out how to fix
 command! ColorPallet call <SID>ColorX11RgbTxt()
 
-" Vertically split the annotations for current file under CVS control "{{{2
-" NOTE this needs to be 
-function! AnnotateCVS() range       "{{{3
-   " split a new buffer and load annotations for the current buffer 
-   "
-   " this may be depricated soon in favor of using cvscommander.vim annotate functionality - tsnyder
-   " 06-Nov-05
-   "
-
-   " Don't want STDERR output in the annotation
-   let opt_shellredir = &shellredir
-   let &srr = substitute(&srr, '&\|2>\S\+', '', '')
-
-   " Save the current window number so we can end up back here
-   let nr = bufnr("%")
-
-   " save cursor and screen position in @s and @t
-   let reg_s=@s
-   let reg_t=@t
-   normal msHmt	
-
-   " save line number of top screen line 
-   "let topScrLine = line("'t")
-   " Move to first line so scroll binding will work
-   normal gg
-
-   " TODO make it so folding is synchronized and not just turned off
-   " TODO make querying commnads on version, user ,date to show only lines of interest
-   "      they will run a custom diffexpr that generates the ex script for 'diffs'
-   "      which are really lines in ChangeLog buffer that match query
-   " Turn off folding in Code window and shrink the foldcolumn to 0
-   setlocal nofoldenable
-   setlocal foldcolumn=0
-   
-
-   " Make sure we are in the CVS working directory so rcvs works right
-   let cwd = getcwd()
-   if cwd != expand("%:p:h")
-      cd %:p:h
-   endif
-   silent! exec 'vnew +0r!\ /proj/verif/bin/rcvs\ annotate\ '.expand('%')
-
-   " TODO this changes histories, fix that
-   $delete
-   silent! %s/:.*//
-
-   " TODO need to make this work without Tsnyder::Text so function can move into diffim.vim
-   "if exists("*ColOrder")
-      "silent! call ColOrder('rest')
-      "this is breaking things now - tsnyder 05-Aug-06
-      "only serves to reduce the amount of whitespace used for 
-   "endif
-   "Accomplish the columnize functionality using an external filter.  Slower but doesn't have 
-   "the bug that is in my personal Text lib - tsnyder 05-Aug-06
-   :%!/tool/pandora/bin/columnize
-   set ft=CVSAnnotate
-   setlocal nomodified
-   setlocal noswapfile
-   " I really want this to be a slave window of the other one, closest thing is a helpfile with
-   " nomodifiable set.  It will exit if you exit from code window, need to replicate folds in the 
-   " actual code window and synch the folds...
-   silent! file ChangeLog
-   setlocal buftype=nofile
-   setlocal nomodifiable
-   setlocal noreadonly
-
-   " TODO make it so folding is synchronized and not just turned off
-   setlocal foldcolumn=0
-
-   exec 'vertical resize '.(strlen(getline("."))+&fdc)
-   setlocal winfixheight
-   setlocal winfixwidth
-
-   "put the ChangeLog window on the first line so it lines up with code
-   "exec 'normal '.topScrLine.'zt'
-   normal gg
-   "bind scrolling of ChangeLog so it stays aligned with code
-   set scrollbind
-
-   " Go back to real code window
-   exec bufwinnr(nr) . "wincmd w"
-
-   " bind scrolling to ChangeLog
-   set scrollbind
-
-
-   "go back to saved cursor and screen position
-   normal 'tzt`s	 
-   let @s=reg_s
-   let @t=reg_t
-
-   " Virtual offset will be off after doing these jumps, need to synchonize the bindings
-   " TODO any offsets that ARE correct will be lost by doing this too ...
-   syncbind
-
-   " Undo side effects
-   let &srr = opt_shellredir
-   if cwd != getcwd()
-      exec 'cd '.cwd
-   endif
-
-endfunction  "}}}
-command! Annotate call AnnotateCVS()
 
 " Do the first common steps for turning a case frame into a pla   {{{2
 function! <SID>RTLtoPLAstart(bang, wid,  ...) range		  "{{{3
