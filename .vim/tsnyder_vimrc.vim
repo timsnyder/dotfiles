@@ -1,7 +1,7 @@
 " VIM Configuration File
 " Author:   Tim Snyder <tim.snyder@amd.com>
 " Modeline: vim:fdc=2:fml=1:fdm=marker:fcs=fold\:\ 
-" Last Modified: centos 08-Apr-22 13:33 
+" Last Modified: centos 08-Apr-22 14:21 
 " Note: If you are totally lost with folding turned on, type 'zi' in Normal mode
 "	or do Tools->Folding->Enable/Disable Folding in GUI menus
 "    TODO List	{{{1
@@ -114,7 +114,9 @@ set spelllang=en_us
 " ===============
 
 " ignore changes in the amount of whitespace
-set diffopt+=iwhite
+" remove this because we use vimdiff to check commits now and we typically don't want to
+" commit spurious whitespace changes
+"set diffopt+=iwhite
 
 " :grep related options		    {{{2
 " =====================
