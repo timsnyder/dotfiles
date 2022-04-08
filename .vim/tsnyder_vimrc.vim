@@ -1,7 +1,7 @@
 " VIM Configuration File
 " Author:   Tim Snyder <tim.snyder@amd.com>
 " Modeline: vim:fdc=2:fml=1:fdm=marker:fcs=fold\:\ 
-" Last Modified: centos 03-Jun-20 14:14 
+" Last Modified: centos 08-Apr-22 13:33 
 " Note: If you are totally lost with folding turned on, type 'zi' in Normal mode
 "	or do Tools->Folding->Enable/Disable Folding in GUI menus
 "    TODO List	{{{1
@@ -95,6 +95,8 @@ let CVSCommandEdit = 'pedit'
 
 " VIM Option Initialization									{{{1
 " =========================
+
+set guifont=JetBrainsMonoNL\ Nerd\ Font\ Mono\ Medium\ 11
 
 " Spell Checking Options		    {{{2
 

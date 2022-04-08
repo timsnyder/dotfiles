@@ -77,6 +77,32 @@ else
     echo "Skipping zsh stuff because zsh isn't installed and it will error. You can rerun aftet installing zsh if you want to have oh-my-zsh"
 fi
 
+(
+    # install a decent default font
+    if [[ "$machine" == Mac ]]; then
+	fontdir=~/Library/fonts
+    else
+	fontdir=~/.local/share/fonts
+    fi
+
+    mkdir -p $fontdir && cd $fontdir
+
+    # create a link because I still use old crap that uses the deprecated path
+    ln -s $fontdir ~/.fonts
+
+    curl -fLo "JetBrainsMono NL Medium Nerd Font Complete.ttf" \
+	https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/JetBrainsMono/NoLigatures/Medium/complete/JetBrains%20Mono%20NL%20Medium%20Nerd%20Font%20Complete%20Mono.ttf
+
+    if [[ "$machine" == Linux ]]; then
+      # Reset font cache on Linux
+      if which fc-cache >/dev/null 2>&1 ; then
+	  echo "Resetting font cache, this may take a moment..."
+	  fc-cache -f "$fontdir"
+      else
+	  echo "Missing fc-cache. Intall fontconfig and run 'fc-cache -f $fontdir'"
+      fi
+    fi
+)
 
 
 
