@@ -1,7 +1,7 @@
 " VIM Configuration File
 " Author:   Tim Snyder <tim.snyder@amd.com>
 " Modeline: vim:fdc=2:fml=1:fdm=marker:fcs=fold\:\ 
-" Last Modified: centos 08-Apr-22 14:21 
+" Last Modified: centos 29-Apr-22 17:54 
 " Note: If you are totally lost with folding turned on, type 'zi' in Normal mode
 "	or do Tools->Folding->Enable/Disable Folding in GUI menus
 "    TODO List	{{{1
@@ -71,6 +71,9 @@ let g:no_cvscommand_default_mappings = 1
 
 " Make cvscommand.vim use the preview window instead of editing in the main window		{{{2
 let CVSCommandEdit = 'pedit'
+
+" Make the python ftplugin follow PEP-8 'expandtab ts=4 sts=4 sw=4' 		{{{2
+let g:python_recommended_style = 1
 
 												"}}}
 
