@@ -169,3 +169,7 @@
     fetchJobs=4
 [rebase]
 	autoSquash = true
+[url "https://github.com/davea42/libdwarf-code.git"]
+	insteadOf = git://git.code.sf.net/p/libdwarf/code
+[url "https://github.com"]
+	insteadOf = git://github.com
