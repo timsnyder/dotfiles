@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 set -o pipefail
 set -e
@@ -12,8 +12,13 @@ case "${unameOut}" in
     *)          machine="UNKNOWN:${unameOut}"
 esac
 
+PYTHON=python
+if ! type ${PYTHON} >&/dev/null && type python3 >&/dev/null; then
+    PYTHON=python3
+fi
+
 pyreadlink() {
-    python -c 'import os; print(os.path.realpath("'"$1"'"))'
+    $PYTHON -c 'import os; print(os.path.realpath("'"$1"'"))'
 }
 
 
@@ -110,7 +115,7 @@ fi
 # a few exclusions
 git ls-tree HEAD --name-only | \
     grep -v README | grep -v install.sh | grep -v install-powerline-fonts.sh | grep -v '\.*.user' |\
-    xargs -I{} -n1 python -c 'import os; print(os.path.realpath("'{}'"))' |\
+    xargs -I{} -n1 $PYTHON -c 'import os; print(os.path.realpath("'{}'"))' |\
     xargs -n1 -x -t -I{} ln -s -v --backup=numbered {} $HOME
 
 # prepare for other things to muck with .bashrc, .profile, .zshrc
@@ -124,7 +129,7 @@ git ls-tree HEAD --name-only | \
 # TODO this ends up still adding crap after I've done it the first time if I rerun install.sh
 git ls-tree HEAD --name-only | \
     grep -v README | grep -v install.sh | grep -v install-powerline-fonts.sh | grep '\.*.user' |\
-    xargs -I{} -n1 python -c 'import os; print(os.path.realpath("'{}'"))' | \
+    xargs -I{} -n1 $PYTHON -c 'import os; print(os.path.realpath("'{}'"))' | \
     xargs -n1 -x -t bash -vc 'echo ". $0" >> "$HOME/$(basename ${0%.user})"'
 
 
