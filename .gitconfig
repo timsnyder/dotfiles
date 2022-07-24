@@ -88,6 +88,9 @@
     # just give me the short version of the sha I have checked out, sheesh.
     head = rev-parse --short HEAD
 
+    # describe options useful for an important repo
+    fd = describe --tags --match *-general --match *-preview --match sparta.firesim* --dirty --broken
+
 [advice]
     detachedHead = false
 [diff]
@@ -98,7 +101,7 @@
 [difftool]
     prompt = false
 [difftool.kccmp]
-    cmd = /sarc/spa/users/tsnyder/src/kccmp-0.3/kccmp $LOCAL $MERGED
+    cmd = kccmp $LOCAL $MERGED
 [difftool.gvimdiffdir]
     # dirdiff seems to only give one path, $LOCAL. 
     # $MERGED seems to be undef when called with -d
@@ -173,3 +176,8 @@
 	insteadOf = git://git.code.sf.net/p/libdwarf/code
 [url "https://github.com"]
 	insteadOf = git://github.com
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
