@@ -82,10 +82,10 @@ gtt ()
 
 git-owner ()
 {
-    if [[ ! -f ~/github_sifive_token ]]; then
-	echo "::ERROR:: Please put a personal access token in ~/github_sifive_token"
+    if [[ ! -f ~/github_token ]]; then
+	echo "::ERROR:: Please put a personal access token in ~/github_token"
     fi
-    curl https://api.github.com/repos/sifive/$@/collaborators\?access_token=$(cat ~/github_sifive_token) | jq '[ .[] | select(.permissions.admin == true) | .login ]'
+    curl -H "Authorization: token $(cat ~/github_token)" https://api.github.com/repos/$1/collaborators  | jq '[ .[] | select(.permissions.admin == true) | .login ]'
 }
 
 docker.socat() {
