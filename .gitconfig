@@ -71,14 +71,25 @@
 
     sm   = submodule
     dsm  = !git --no-pager diff --submodule=log
+    smfe = submodule foreach
+    smfer= submodule foreach --recursive
 
     rc   = rebase --continue
     mt   = mergetool
     dt   = mergetool
     dd   = difftool -d --tool gvimdiffdir
 
+    # interactive clean through all submodules
+    ic = "!git clean -Xdi; git smfer git clean -Xdi"
+    # dry-run clean through all submodules
+    cn = "!git clean -Xdn; git smfer git clean -Xdn"
+
+
     # just give me the short version of the sha I have checked out, sheesh.
     head = rev-parse --short HEAD
+
+    # describe options useful for an important repo
+    fd = describe --tags --match *-general --match *-preview --match sparta.firesim* --dirty --broken
 
 [advice]
     detachedHead = false
@@ -90,7 +101,7 @@
 [difftool]
     prompt = false
 [difftool.kccmp]
-    cmd = /sarc/spa/users/tsnyder/src/kccmp-0.3/kccmp $LOCAL $MERGED
+    cmd = kccmp $LOCAL $MERGED
 [difftool.gvimdiffdir]
     # dirdiff seems to only give one path, $LOCAL. 
     # $MERGED seems to be undef when called with -d
@@ -161,3 +172,12 @@
     fetchJobs=4
 [rebase]
 	autoSquash = true
+[url "https://github.com/davea42/libdwarf-code.git"]
+	insteadOf = git://git.code.sf.net/p/libdwarf/code
+[url "https://github.com"]
+	insteadOf = git://github.com
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

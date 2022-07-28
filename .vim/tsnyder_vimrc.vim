@@ -1,7 +1,7 @@
 " VIM Configuration File
 " Author:   Tim Snyder <tim.snyder@amd.com>
 " Modeline: vim:fdc=2:fml=1:fdm=marker:fcs=fold\:\ 
-" Last Modified: centos 03-Jun-20 14:14 
+" Last Modified: centos 01-May-22 15:55 
 " Note: If you are totally lost with folding turned on, type 'zi' in Normal mode
 "	or do Tools->Folding->Enable/Disable Folding in GUI menus
 "    TODO List	{{{1
@@ -72,6 +72,9 @@ let g:no_cvscommand_default_mappings = 1
 " Make cvscommand.vim use the preview window instead of editing in the main window		{{{2
 let CVSCommandEdit = 'pedit'
 
+" Make the python ftplugin follow PEP-8 'expandtab ts=4 sts=4 sw=4' 		{{{2
+let g:python_recommended_style = 1
+
 												"}}}
 
 " How-to Selectively Disable Certain VIM Plugins						{{{2
@@ -96,6 +99,8 @@ let CVSCommandEdit = 'pedit'
 " VIM Option Initialization									{{{1
 " =========================
 
+set guifont=JetBrainsMonoNL\ Nerd\ Font\ Mono\ Medium\ 11
+
 " Spell Checking Options		    {{{2
 
 " Yes, I want to spell like an American.
@@ -112,7 +117,9 @@ set spelllang=en_us
 " ===============
 
 " ignore changes in the amount of whitespace
-set diffopt+=iwhite
+" remove this because we use vimdiff to check commits now and we typically don't want to
+" commit spurious whitespace changes
+"set diffopt+=iwhite
 
 " :grep related options		    {{{2
 " =====================
@@ -131,20 +138,23 @@ set smartcase
 " Folding			{{{2
 " =======
 
-" Default to syntactic folding instead of manual
-set foldmethod=syntax
+if has('folding')
 
-" Always leave folds smaller than &foldminlines open
-"set foldminlines=5
+    " Default to syntactic folding instead of manual
+    set foldmethod=syntax
 
-" Make closed folds not be filled with '-' because that makes folded text hard to read
-" Note the <Space> that is escaped for fold:
-set fillchars=fold:\ 
+    " Always leave folds smaller than &foldminlines open
+    "set foldminlines=5
 
-" If syntax is detected, add column for folding, otherwise, don't, prevents black folding column on
-" cterm background
-if exists("b:current_syntax")
-    set foldcolumn=2
+    " Make closed folds not be filled with '-' because that makes folded text hard to read
+    " Note the <Space> that is escaped for fold:
+    set fillchars=fold:\ 
+
+    " If syntax is detected, add column for folding, otherwise, don't, prevents black folding column on
+    " cterm background
+    if exists("b:current_syntax")
+	set foldcolumn=2
+    endif
 endif
 
 " Formatting and Appearance		    {{{2
@@ -195,8 +205,12 @@ set history=100		      " keep a lot of command line history (keeps me from getti
 					    
 " Mouse				    {{{2
 " =====
-" Enable mouse for xterm
-set mouse=a
+if has('mouse')
+    " try using the default here because 'a' when gui is not enabled is annoying because you can't
+    " copy/paste using the terminal copy/paste and I'm tired of having to switch this to use it.
+    " Enable mouse for xterm
+    "set mouse=a
+endif
 
 " Keyword Program Setup		    {{{2
 " =====================
@@ -301,115 +315,6 @@ function! TermSyntaxColoring() range	"{{{2
     highlight PreProc     ctermfg=6
 endfunction
 
-function! <SID>ColorX11RgbTxt() range		"{{{2
-    " XXX I spent way too much time trying to get this to work in Aug 2005, it fills the colormap
-    "     and then starts doing goofy ass stuff for the rest of the colors.  At some point it would
-    "     be cool to learn more about how X handles colors and get this working but as you are about
-    "     to see from this comment, it has been a couple months and I haven't done it yet
-    "     - tsnyder 06-Nov-05
-    " TODO if I ever care about portability, make it check to make sure we are on X not something
-    " else
-    if &term != 'builtin_gui'
-	echoerr "All X11 colors can only properly be displayed in the GUI, do :gui first!"
-	return
-    endif
-    if !has('perl')
-	echoerr "This command requires vim be compiled with perl_interface. It seems to be missing."
-	return
-    endif
-    let colorfile = "/usr/lib/X11/rgb.txt"
-    "let colorfile = "/home/tsnyder/rgb.txt"
-    if !filereadable(colorfile)
-	echoerr "Can't find colorfile:".colorfile
-	return
-    endif
-
-    silent call SplitDrop(colorfile)
-
-    " save global options and registers
-    let s:hidden      = &hidden
-    let s:lazyredraw  = &lazyredraw
-    let s:more	      = &more
-    let s:report      = &report
-    let s:shortmess   = &shortmess
-    let s:wrapscan    = &wrapscan
-
-    " set global options
-    set hidden lazyredraw nomore report=99999 shortmess=aoOstTW nowrapscan
-
-    " set local options
-    setlocal bt=nofile "not going to save this stuff back to non-writable file so just don't worry if user makes changes, just don't let them write it
-    setlocal noro
-    file X11ColorPallet
-    "sort the color file by colorname ignoring case
-    2,$!/tool/pandora/bin/sort -un -k1,1 -k2,2 -k3,3
-    " TODO stopped here !!!! - tsnyder 25-Jul-05 01:40
-    " while search("^\v\s*\d{3}\s+\d{3}\s+\d{3}\s+\w+$","W")  
-    " won't match colors with spaces but they are all duplicates anyway
-    syntax clear
-    set iskeyword+=" "
-    "perldo  while (/\b(\d{1,2})\b/) { my $j = 's/\b$1\b/'.sprintf("%0.3u",$1).'/'; print "do $j\n";  eval $j } 
-    perl <<
-	#VIM::Msg("lineNum:".VIM::Eval('line(".")'));
-	foreach my $i (2 .. $main::curbuf->Count()){
-	    my $line = $main::curbuf->Get($i);
-	    $line =~ s/^\s+|\s+$//g;
-#	    VIM::Msg( "line:$line");
-	    my @spline = split " ", $line, 4;
-#	    VIM::Msg( 'spline:'.(join ",",@spline));
-	    my $colNr = '#'.sprintf('%2.2x'x3,@spline[0..2]);
-	    my $col = $spline[3];
-	    $line = 
-	    sprintf(('%0.3u 'x3).("\t%s"x6),
-		    @spline[0..2],
-		    $colNr,
-		    $col,
-		    $col.'_onWhite',
-		    $col.'_onBlack',
-		    'WhiteOn_'.$col,
-		    'BlackOn_'.$col
-		   );
-	    my $gn = $col;
-#	    VIM::Msg( 'gn:'.$gn);
-	    $gn =~ s/\s+/_/g;
-#	    VIM::Msg( 'gn:'.$gn);
-	    if ($col =~ s/(?<!\\)(?=\s)/\\/g){
-#		VIM::Msg( 'hi X11rgb_'.$gn.'_onWhite guifg='.$colNr.' guibg=White');
-#		VIM::Msg( 'hi X11rgb_'.$gn.'_onBlack guifg='.$colNr.' guibg=Black');
-#		VIM::Msg( 'hi X11rgb_WhiteOn_'.$gn.' guibg='.$colNr.' guifg=White');
-#		VIM::Msg( 'hi X11rgb_BlackOn_'.$gn.' guibg='.$colNr.' guifg=Black');
-#		VIM::Msg( 'syn keyword X11rgb_'.$gn.'_onWhite '.$col.'_onWhite ');
-#		VIM::Msg( 'syn keyword X11rgb_'.$gn.'_onBlack '.$col.'_onBlack ');
-#		VIM::Msg( 'syn keyword X11rgb_WhiteOn_'.$gn.' WhiteOn_'.$col);
-#		VIM::Msg( 'syn keyword X11rgb_BlackOn_'.$gn.' BlackOn_'.$col);
-#		VIM::DoCommand( 'call input("hit enter")');
-	    }
-	    VIM::DoCommand( 'hi X11rgb_'.$gn.'_onWhite guifg='.$colNr.' guibg=White');
-	    VIM::DoCommand( 'hi X11rgb_'.$gn.'_onBlack guifg='.$colNr.' guibg=Black');
-	    VIM::DoCommand( 'hi X11rgb_WhiteOn_'.$gn.' guibg='.$colNr.' guifg=White');
-	    VIM::DoCommand( 'hi X11rgb_BlackOn_'.$gn.' guibg='.$colNr.' guifg=Black');
-	    VIM::DoCommand( 'syn match X11rgb_'.$gn.'_onWhite /\<'.$col.'_onWhite\>/');
-	    VIM::DoCommand( 'syn match X11rgb_'.$gn.'_onBlack /\<'.$col.'_onBlack\>/');
-	    VIM::DoCommand( 'syn match X11rgb_WhiteOn_'.$gn.' /\<WhiteOn_'.$col.'\>/');
-	    VIM::DoCommand( 'syn match X11rgb_BlackOn_'.$gn.' /\<BlackOn_'.$col.'\>/');
-	    $main::curbuf->Set($i,$line);
-	}
-.
-    normal 1G
-    nohlsearch
-    syntax sync minlines=1
-
-    " restore global options and registers
-    let &hidden      = s:hidden
-    let &lazyredraw  = s:lazyredraw
-    let &more	     = s:more
-    let &report	     = s:report
-    let &shortmess   = s:shortmess
-    let &wrapscan    = s:wrapscan
-
-    echoe "Don't have the coloring exactly figured out.  Seems I run out of space to allocate new colors"
-
-endfunction
 
 						"}}}
 " Grab the time string under the cursor and yank it into a register {{{2
@@ -434,14 +339,6 @@ command -nargs=1 SetGrabTimeFormat let s:time_format = <q-args>
 " make diffsplit do the splitting vertically without having to remember to type vertical everytime
 cabbrev diffsplit vertical diffsplit
 
-" Make the names of design centers always capitalized  {{{2
-"iab idc IDC
-"iab bdc BDC
-"iab asdc ASDC
-"iab andc ANDC
-"iab svdc SVDC
-
-						      " }}}
 
 " User Commands			{{{1
 " =============
@@ -455,113 +352,6 @@ command! Source execute $VIMINIT <Bar> edit
 " would be shown instead of being grepped out - tsnyder 22-Jul-05
 command! HilightColors runtime syntax/hitest.vim
 
-" Open a window that displays /usr/lib/X11/rgb.txt with color names fg in each color {{{2
-" This currently doesn't work, fills up colormap and I haven't spent time to figure out how to fix
-command! ColorPallet call <SID>ColorX11RgbTxt()
-
-" Vertically split the annotations for current file under CVS control "{{{2
-" NOTE this needs to be 
-function! AnnotateCVS() range       "{{{3
-   " split a new buffer and load annotations for the current buffer 
-   "
-   " this may be depricated soon in favor of using cvscommander.vim annotate functionality - tsnyder
-   " 06-Nov-05
-   "
-
-   " Don't want STDERR output in the annotation
-   let opt_shellredir = &shellredir
-   let &srr = substitute(&srr, '&\|2>\S\+', '', '')
-
-   " Save the current window number so we can end up back here
-   let nr = bufnr("%")
-
-   " save cursor and screen position in @s and @t
-   let reg_s=@s
-   let reg_t=@t
-   normal msHmt	
-
-   " save line number of top screen line 
-   "let topScrLine = line("'t")
-   " Move to first line so scroll binding will work
-   normal gg
-
-   " TODO make it so folding is synchronized and not just turned off
-   " TODO make querying commnads on version, user ,date to show only lines of interest
-   "      they will run a custom diffexpr that generates the ex script for 'diffs'
-   "      which are really lines in ChangeLog buffer that match query
-   " Turn off folding in Code window and shrink the foldcolumn to 0
-   setlocal nofoldenable
-   setlocal foldcolumn=0
-   
-
-   " Make sure we are in the CVS working directory so rcvs works right
-   let cwd = getcwd()
-   if cwd != expand("%:p:h")
-      cd %:p:h
-   endif
-   silent! exec 'vnew +0r!\ /proj/verif/bin/rcvs\ annotate\ '.expand('%')
-
-   " TODO this changes histories, fix that
-   $delete
-   silent! %s/:.*//
-
-   " TODO need to make this work without Tsnyder::Text so function can move into diffim.vim
-   "if exists("*ColOrder")
-      "silent! call ColOrder('rest')
-      "this is breaking things now - tsnyder 05-Aug-06
-      "only serves to reduce the amount of whitespace used for 
-   "endif
-   "Accomplish the columnize functionality using an external filter.  Slower but doesn't have 
-   "the bug that is in my personal Text lib - tsnyder 05-Aug-06
-   :%!/tool/pandora/bin/columnize
-   set ft=CVSAnnotate
-   setlocal nomodified
-   setlocal noswapfile
-   " I really want this to be a slave window of the other one, closest thing is a helpfile with
-   " nomodifiable set.  It will exit if you exit from code window, need to replicate folds in the 
-   " actual code window and synch the folds...
-   silent! file ChangeLog
-   setlocal buftype=nofile
-   setlocal nomodifiable
-   setlocal noreadonly
-
-   " TODO make it so folding is synchronized and not just turned off
-   setlocal foldcolumn=0
-
-   exec 'vertical resize '.(strlen(getline("."))+&fdc)
-   setlocal winfixheight
-   setlocal winfixwidth
-
-   "put the ChangeLog window on the first line so it lines up with code
-   "exec 'normal '.topScrLine.'zt'
-   normal gg
-   "bind scrolling of ChangeLog so it stays aligned with code
-   set scrollbind
-
-   " Go back to real code window
-   exec bufwinnr(nr) . "wincmd w"
-
-   " bind scrolling to ChangeLog
-   set scrollbind
-
-
-   "go back to saved cursor and screen position
-   normal 'tzt`s	 
-   let @s=reg_s
-   let @t=reg_t
-
-   " Virtual offset will be off after doing these jumps, need to synchonize the bindings
-   " TODO any offsets that ARE correct will be lost by doing this too ...
-   syncbind
-
-   " Undo side effects
-   let &srr = opt_shellredir
-   if cwd != getcwd()
-      exec 'cd '.cwd
-   endif
-
-endfunction  "}}}
-command! Annotate call AnnotateCVS()
 
 " Do the first common steps for turning a case frame into a pla   {{{2
 function! <SID>RTLtoPLAstart(bang, wid,  ...) range		  "{{{3

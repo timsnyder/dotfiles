@@ -1,5 +1,5 @@
 " Modeline: vim:fdc=2:fml=1:fdm=marker:fcs=fold\:\ 
-" Last Modified: tsnyder 19-Jul-16 07:16 
+" Last Modified: centos 01-May-22 15:50 
 " Note: If you are totally lost with folding turned on, type 'zi' in Normal mode
 "	or do Tools->Folding->Enable/Disable Folding in GUI menus
 
@@ -41,8 +41,10 @@ let sv_fold = 1
 " try turning off smartindenting
 set nosmartindent
 
-" try to make folding a little more friendly
-set foldminlines=10
+if has('folding')
+    " try to make folding a little more friendly
+    set foldminlines=10
+endif
 
 au BufReadPost * if &foldlevel == 0 | set foldlevel=1 | endif
 

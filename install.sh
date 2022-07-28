@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 set -o pipefail
 set -e
@@ -12,8 +12,13 @@ case "${unameOut}" in
     *)          machine="UNKNOWN:${unameOut}"
 esac
 
+PYTHON=python
+if ! type ${PYTHON} >&/dev/null && type python3 >&/dev/null; then
+    PYTHON=python3
+fi
+
 pyreadlink() {
-    python -c 'import os; print(os.path.realpath("'"$1"'"))'
+    $PYTHON -c 'import os; print(os.path.realpath("'"$1"'"))'
 }
 
 
@@ -25,53 +30,84 @@ cd $bin
 # we have submodules now for vim plugins. Make sure they are up to date
 git submodule update --init --recursive
 
-export ZSH="$HOME/.oh-my-zsh"
+if which zsh >& /dev/null; then
 
-if [[ -d "$ZSH" ]]; then
-    echo "Skipping oh-my-zsh install because '$ZSH' already exists"
+    export ZSH="$HOME/.oh-my-zsh"
+
+    if [[ -d "$ZSH" ]]; then
+	echo "Skipping oh-my-zsh install because '$ZSH' already exists"
+    else
+
+	# install oh-my-zsh first
+	#   --unattended doesn't try to change the default shell or run zsh after doing the install
+	(set -x ; sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended)
+    fi
+
+
+    # install spaceship prompt
+    ZSH_CUSTOM="$ZSH/custom"
+    SPACESHIP="$ZSH_CUSTOM/themes/spaceship-prompt"
+    if [[ -d "$SPACESHIP" ]]; then
+	echo "Skipping spaceship-prompt install because '$SPACESHIP' already exists"
+    else
+	echo "Installing spaceship-prompt"
+	(   set -x
+	    git clone https://github.com/denysdovhan/spaceship-prompt.git "$SPACESHIP"
+	    ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$SPACESHIP"
+	)
+    fi
+
+
+    ZSH_AUTO="$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+    if [[ -d "$ZSH_AUTO" ]]; then
+	echo "Skipping zsh-autosuggestions install because '$ZSH_AUTO' already exists"
+    else
+	echo "Installing zsh-autosuggestions"
+	(   set -x
+	    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_AUTO"
+	)
+    fi
+
+    ZSH_HISTDB="$ZSH_CUSTOM/plugins/zsh-histdb"
+    if [[ -d "$ZSH_HISTDB" ]]; then
+	echo "Skipping zsh-histdb install because '$ZSH_HISTDB' already exists"
+    else
+	echo "Installing zsh-histdb"
+	(   set -x
+	    git clone https://github.com/larkery/zsh-histdb "$ZSH_HISTDB"
+	)
+    fi
+
 else
-
-    # install oh-my-zsh first
-    #   --unattended doesn't try to change the default shell or run zsh after doing the install
-    (set -x ; sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended)
+    echo "Skipping zsh stuff because zsh isn't installed and it will error. You can rerun aftet installing zsh if you want to have oh-my-zsh"
 fi
 
+(
+    # install a decent default font
+    if [[ "$machine" == Mac ]]; then
+	fontdir=~/Library/fonts
+    else
+	fontdir=~/.local/share/fonts
+    fi
 
+    mkdir -p $fontdir && cd $fontdir
 
-# install spaceship prompt
-ZSH_CUSTOM="$ZSH/custom"
-SPACESHIP="$ZSH_CUSTOM/themes/spaceship-prompt"
-if [[ -d "$SPACESHIP" ]]; then
-    echo "Skipping spaceship-prompt install because '$SPACESHIP' already exists"
-else
-    echo "Installing spaceship-prompt"
-    (   set -x
-	git clone https://github.com/denysdovhan/spaceship-prompt.git "$SPACESHIP"
-	ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$SPACESHIP"
-    )
-fi
+    # create a link because I still use old crap that uses the deprecated path
+    ln -s $fontdir ~/.fonts
 
+    curl -fLo "JetBrainsMono NL Medium Nerd Font Complete.ttf" \
+	https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/JetBrainsMono/NoLigatures/Medium/complete/JetBrains%20Mono%20NL%20Medium%20Nerd%20Font%20Complete%20Mono.ttf
 
-ZSH_AUTO="$ZSH_CUSTOM/plugins/zsh-autosuggestions"
-if [[ -d "$ZSH_AUTO" ]]; then
-    echo "Skipping zsh-autosuggestions install because '$ZSH_AUTO' already exists"
-else
-    echo "Installing zsh-autosuggestions"
-    (   set -x
-	git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_AUTO"
-    )
-fi
-
-ZSH_HISTDB="$ZSH_CUSTOM/plugins/zsh-histdb"
-if [[ -d "$ZSH_HISTDB" ]]; then
-    echo "Skipping zsh-histdb install because '$ZSH_HISTDB' already exists"
-else
-    echo "Installing zsh-histdb"
-    (   set -x
-	git clone https://github.com/larkery/zsh-histdb "$ZSH_HISTDB"
-    )
-fi
-
+    if [[ "$machine" == Linux ]]; then
+      # Reset font cache on Linux
+      if which fc-cache >/dev/null 2>&1 ; then
+	  echo "Resetting font cache, this may take a moment..."
+	  fc-cache -f "$fontdir"
+      else
+	  echo "Missing fc-cache. Intall fontconfig and run 'fc-cache -f $fontdir'"
+      fi
+    fi
+)
 
 
 
@@ -79,7 +115,7 @@ fi
 # a few exclusions
 git ls-tree HEAD --name-only | \
     grep -v README | grep -v install.sh | grep -v install-powerline-fonts.sh | grep -v '\.*.user' |\
-    xargs -I{} -n1 python -c 'import os; print(os.path.realpath("'{}'"))' |\
+    xargs -I{} -n1 $PYTHON -c 'import os; print(os.path.realpath("'{}'"))' |\
     xargs -n1 -x -t -I{} ln -s -v --backup=numbered {} $HOME
 
 # prepare for other things to muck with .bashrc, .profile, .zshrc
@@ -93,7 +129,7 @@ git ls-tree HEAD --name-only | \
 # TODO this ends up still adding crap after I've done it the first time if I rerun install.sh
 git ls-tree HEAD --name-only | \
     grep -v README | grep -v install.sh | grep -v install-powerline-fonts.sh | grep '\.*.user' |\
-    xargs -I{} -n1 python -c 'import os; print(os.path.realpath("'{}'"))' | \
+    xargs -I{} -n1 $PYTHON -c 'import os; print(os.path.realpath("'{}'"))' | \
     xargs -n1 -x -t bash -vc 'echo ". $0" >> "$HOME/$(basename ${0%.user})"'
 
 
