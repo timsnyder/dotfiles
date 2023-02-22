@@ -96,7 +96,7 @@ fi
     ln -s $fontdir ~/.fonts
 
     curl -fLo "JetBrainsMono NL Medium Nerd Font Complete.ttf" \
-	https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/JetBrainsMono/NoLigatures/Medium/complete/JetBrains%20Mono%20NL%20Medium%20Nerd%20Font%20Complete%20Mono.ttf
+	https://github.com/ryanoasis/nerd-fonts/raw/85e37e754f4b68f55cd866552e927eee0a2f927a/patched-fonts/JetBrainsMono/NoLigatures/Medium/complete/JetBrains%20Mono%20NL%20Nerd%20Font%20Complete%20Mono%20Medium.ttf
 
     if [[ "$machine" == Linux ]]; then
       # Reset font cache on Linux
