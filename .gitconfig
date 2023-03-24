@@ -168,8 +168,10 @@
 [push]
 	default = simple
 
-[submodule]
-    fetchJobs=4
+[fetch]
+    # 0 picks some reasonable default
+    # aka online_cores https://github.com/git/git/blob/27d43aaaf50ef0ae014b88bba294f93658016a2e/builtin/fetch.c#L2206-L2207
+    parallel=0
 [rebase]
 	autoSquash = true
 [url "https://github.com/davea42/libdwarf-code.git"]
