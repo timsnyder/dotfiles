@@ -86,8 +86,18 @@ if which zsh >& /dev/null; then
 	)
     fi
 
+    ZSH_SPACESHIP_VI_MODE="$ZSH_CUSTOM/plugins/spaceship-vi-mode"
+    if [[ -d "$ZSH_SPACESHIP_VI_MODE" ]]; then
+	echo "Skipping spaceship-vi-mode install because '$ZSH_SPACESHIP_VI_MODE' already exists"
+    else
+	echo "Installing spaceship-vi-mode"
+	(   set -x
+            git clone https://github.com/spaceship-prompt/spaceship-vi-mode.git "$ZSH_SPACESHIP_VI_MODE"
+	)
+    fi
+
     # enable the plugins we installed
-    sed -i 's/^plugins=.*/plugins=(git zsh-histdb zsh-autosuggestions)/' ~/.zshrc
+    sed -i 's/^plugins=.*/plugins=(git zsh-histdb zsh-autosuggestions spaceship-vi-mode)/' ~/.zshrc
 
     # oh-my-zsh doesn't like it when stuff is writable by others (specifically completions but we'll just take the easy way out)
     chmod -R go-w "$ZSH"
