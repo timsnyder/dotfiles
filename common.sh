@@ -130,10 +130,6 @@ conda.bootstrap () {
     unset __conda_prefix
 }
 
-conda.sparta() {
-    conda.bootstrap /work/sparta/conda/miniforge3
-}
-
 conda.mine() {
     if [[ -d "$HOME/miniforge3" ]]; then
 	conda.bootstrap "$HOME/miniforge3"
@@ -142,11 +138,6 @@ conda.mine() {
     elif [[ -d "$HOME/opt/miniconda3" ]]; then
 	conda.bootstrap "$HOME/opt/miniconda3"
     fi
-}
-
-git.use_sifive_email() {
-    export GIT_AUTHOR_EMAIL=timothy.snyder@sifive.com
-    export GIT_COMMITTER_EMAIL=timothy.snyder@sifive.com
 }
 
 log.date() {
