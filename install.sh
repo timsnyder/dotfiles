@@ -46,7 +46,8 @@ if which zsh >& /dev/null; then
         fi
   
 	#   --unattended doesn't try to change the default shell or run zsh after doing the install
-	(set -x ; sh -c "$script" --unattended)
+        # goofy empty string needed to separate script args. It might be same as doing --?
+ 	(set -x ; sh -c "$script" "" --unattended)
     fi
 
 
@@ -59,7 +60,7 @@ if which zsh >& /dev/null; then
 	echo "Installing spaceship-prompt"
 	(   set -x
 	    git clone https://github.com/denysdovhan/spaceship-prompt.git "$SPACESHIP"
-	    ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$SPACESHIP"
+	    ln -s "$SPACESHIP/spaceship.zsh-theme" "$SPACESHIP/../spaceship.zsh-theme"
 	)
     fi
 
