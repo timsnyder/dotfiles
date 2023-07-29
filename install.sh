@@ -39,7 +39,7 @@ if which zsh >& /dev/null; then
     else
 
 	# install oh-my-zsh first
-        script="$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+        script="$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
         if [[ -z "$script" ]]; then
             echo "::ERROR:: Unable to download ohmyzsh install script. Abort!"
             exit 1
