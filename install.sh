@@ -85,6 +85,9 @@ if which zsh >& /dev/null; then
 	)
     fi
 
+    # oh-my-zsh doesn't like it when stuff is writable by others (specifically completions but we'll just take the easy way out)
+    chmod -R go-w "$ZSH"
+
 else
     echo "Skipping zsh stuff because zsh isn't installed and it will error. You can rerun aftet installing zsh if you want to have oh-my-zsh"
 fi
