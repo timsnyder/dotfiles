@@ -61,6 +61,7 @@ if which zsh >& /dev/null; then
 	(   set -x
 	    git clone https://github.com/denysdovhan/spaceship-prompt.git "$SPACESHIP"
 	    ln -s "$SPACESHIP/spaceship.zsh-theme" "$SPACESHIP/../spaceship.zsh-theme"
+            sed -i 's/^ZSH_THEME=.*/ZSH_THEME="spaceship"/' ~/.zshrc
 	)
     fi
 
@@ -84,6 +85,9 @@ if which zsh >& /dev/null; then
 	    git clone https://github.com/larkery/zsh-histdb "$ZSH_HISTDB"
 	)
     fi
+
+    # enable the plugins we installed
+    sed -i 's/^plugins=.*/plugins=(git zsh-histdb zsh-autosuggestions)/' ~/.zshrc
 
     # oh-my-zsh doesn't like it when stuff is writable by others (specifically completions but we'll just take the easy way out)
     chmod -R go-w "$ZSH"
