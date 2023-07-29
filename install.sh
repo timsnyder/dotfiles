@@ -39,8 +39,14 @@ if which zsh >& /dev/null; then
     else
 
 	# install oh-my-zsh first
+        script="$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+        if [[ -z "$script" ]]; then
+            echo "::ERROR:: Unable to download ohmyzsh install script. Abort!"
+            exit 1
+        fi
+  
 	#   --unattended doesn't try to change the default shell or run zsh after doing the install
-	(set -x ; sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended)
+	(set -x ; sh -c "$script" --unattended)
     fi
 
 
